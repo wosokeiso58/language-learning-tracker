@@ -1,0 +1,13 @@
+public enum ActivityType {
+
+    READ_BOOK,
+    READ_ARTICLE,
+    WATCH_CONTENT,
+    LISTEN_PODCAST,
+    SHADOWING,
+    CONVERSATION,
+    WRITE_JOURNAL,
+    ANKI,
+    GRAMMAR_STUDY;
+
+}
