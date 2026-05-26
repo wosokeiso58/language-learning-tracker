@@ -3,7 +3,8 @@ public enum ActivityCategory {
     LISTENING,
     SPEAKING,
     WRITING,
-    GRINDING
+    GRINDING,
+    NEW
 
 
 }
