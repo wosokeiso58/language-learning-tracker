@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 public class Session {
 
     private int minutes;
@@ -6,9 +8,9 @@ public class Session {
 
     private Language language;
 
-    public String date;
+    public LocalDate date;
 
-    public Session(int minutes, ActivityType activityType, Language language, String date) {
+    public Session(int minutes, ActivityType activityType, Language language, LocalDate date) {
         this.minutes = minutes;
         this.activityType = activityType;
         this.language = language;
@@ -24,7 +26,7 @@ public class Session {
     public Language getLanguage() {
         return language;
     }
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 }
