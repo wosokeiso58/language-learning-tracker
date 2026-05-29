@@ -16,5 +16,7 @@ public class PooI {
         sessionManager.logSession(session3);
 
         System.out.println(sessionManager.getTotalMinutes());
+        System.out.println(sessionManager.getTotalMinutes(ActivityType.WRITTEN_CONVERSATION));
+        System.out.println(sessionManager.getTotalMinutes(LocalDate.of(2026,5, 27)));
     }
 }
