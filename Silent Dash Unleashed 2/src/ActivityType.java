@@ -11,10 +11,9 @@ public enum ActivityType {
     WRITE_TEXT,
     ANKI,
     TEXTBOOK,
-    LOOKING_UP,
     PREPARED_SPEECH;
 
-
+    //TODO get main category
 
     public float getReadingCoefficient(){
 
@@ -23,7 +22,6 @@ public enum ActivityType {
             case WATCH_CONTENT_WITH_SUBS, WRITE_TEXT -> 0.25f;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, ANKI -> 0.75f;
             case SHADOWING, TEXTBOOK -> 0.5f;
-            case LOOKING_UP -> 0.125f;
             default -> 0;
         };
 
@@ -65,7 +63,6 @@ public enum ActivityType {
             case COMPREHENSIBLE_INPUT_WITH_SUBS, SHADOWING, PREPARED_SPEECH, COMPREHENSIBLE_INPUT_WITHOUT_SUBS,
                  WATCH_CONTENT_WITHOUT_SUBS -> 0.5f;
             case ANKI -> 1f;
-            case LOOKING_UP -> 0.125f;
             case SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
         };
 
@@ -74,12 +71,23 @@ public enum ActivityType {
 
         return switch (this) {
             case READ_TEXT, COMPREHENSIBLE_INPUT_WITH_SUBS -> 1f;
-            case WATCH_CONTENT_WITH_SUBS, LOOKING_UP, SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
+            case WATCH_CONTENT_WITH_SUBS, SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
             case SHADOWING, TEXTBOOK, WATCH_CONTENT_WITHOUT_SUBS -> 0.5f;
             case ANKI, PREPARED_SPEECH, WRITE_TEXT -> 0.125f;
             case COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> 0.875f;
         };
 
+    }
+
+    public ActivityCategory getMainCategory(){
+        return switch (this) {
+            case WRITE_TEXT -> ActivityCategory.WRITING;
+            case ANKI, TEXTBOOK, WRITTEN_CONVERSATION -> ActivityCategory.GRINDING;
+            case SPOKEN_CONVERSATION, SHADOWING, PREPARED_SPEECH -> ActivityCategory.SPEAKING;
+            case COMPREHENSIBLE_INPUT_WITH_SUBS, WATCH_CONTENT_WITH_SUBS, WATCH_CONTENT_WITHOUT_SUBS,
+                 COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> ActivityCategory.LISTENING;
+            case READ_TEXT -> ActivityCategory.READING;
+        };
     }
 
     @Override
@@ -91,7 +99,6 @@ public enum ActivityType {
             case SHADOWING ->  "Shadowing";
             case SPOKEN_CONVERSATION ->  "Spoken Conversation";
             case READ_TEXT ->  "Reading Text";
-            case LOOKING_UP ->   "Looking Things Up";
             case PREPARED_SPEECH ->    "Prepared Speech";
             case WRITTEN_CONVERSATION ->   "Written Conversation";
             case WATCH_CONTENT_WITH_SUBS ->   "Watching Content With Subtitles";

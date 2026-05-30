@@ -34,20 +34,71 @@ public class SessionManager {
     }
     //TODO code ts maybe with current approach or maybe get the xp of each type and see how many are zero
 
-    /*public float checkVariety(){
-        int writingCount = 0;
-        int speakingCount = 0;
-        int newCount = 0;
-        int grindingCount = 0;
-        int listeningCount = 0;
-        int readingCount = 0;
+    public float checkVariety(){
+        float speakingMinutes = 0;
+        float grindingMinutes = 0;
+        float listeningMinutes = 0;
+        float totalMinutes = 0;
+        float balanceCount = 0;
 
         for(Session session : getSessionsFromLastNDays(14)){
-            switch(session.getActivityType()){
+            switch(session.getActivityType().getMainCategory()){
+
+                case SPEAKING -> speakingMinutes+=session.getMinutes();
+                case GRINDING -> grindingMinutes+=session.getMinutes();
+                case LISTENING ->  listeningMinutes+=session.getMinutes();
             }
+            totalMinutes += session.getMinutes();
         }
 
-    }*/
+        if(totalMinutes / listeningMinutes > 0.2){
+            balanceCount +=1;
+        }
+
+        if(totalMinutes / speakingMinutes > 0.2){
+            balanceCount +=5;
+        }
+
+        if(totalMinutes / grindingMinutes > 0.2){
+            balanceCount +=10;
+        }
+
+        if (balanceCount == 16) {
+            System.out.println("You have a healthy balance of activities. Well done! XP multiplier: x1.25");
+            return 1.25F;
+        }
+        else if(balanceCount == 15){
+            System.out.println("You have a solid balance of activities. You should be doing more listening. XP multiplier: x1.00");
+            return 1F;
+        }
+        else if(balanceCount == 11){
+            System.out.println("You have a solid balance of activities. You should be doing more speaking. XP multiplier: x1.00");
+            return 1F;
+        }
+        else if(balanceCount == 6){
+            System.out.println("You have a solid balance of activities. You should be doing more grinding. XP multiplier: x1.00");
+            return 1F;
+        }
+        else if(balanceCount == 5){
+            System.out.println("You have a weak balance of activities. You should be doing more grinding and listening. XP multiplier: x0.75");
+            return 0.75F;
+        }
+        else if(balanceCount == 10){
+            System.out.println("You have a weak balance of activities. You should be doing more speaking and listening. XP multiplier: x0.75");
+            return 0.75F;
+        }
+        else if(balanceCount == 1){
+            System.out.println("You have a weak balance of activities. You should be doing more speaking and grinding. XP multiplier: x0.75");
+            return 0.75F;
+        }
+        else{
+            System.out.println("error");
+            return 0;
+        }
+
+
+
+    }
 
     public int getTotalMinutes() {
         int totalMinutes = 0;
@@ -81,7 +132,6 @@ public class SessionManager {
         LocalDate cutoff = today.minusDays(days);
         List<Session> sessions = new ArrayList<>();
         for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
-
             LocalDate date = entry.getKey();
             for (Session session : entry.getValue()) {
                 if (!date.isBefore(cutoff)) {
