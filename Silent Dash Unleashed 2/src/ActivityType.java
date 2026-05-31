@@ -9,6 +9,7 @@ public enum ActivityType {
     SPOKEN_CONVERSATION,
     WRITTEN_CONVERSATION,
     WRITE_TEXT,
+    SCRIP_PRACTICE,
     ANKI,
     TEXTBOOK,
     PREPARED_SPEECH;
@@ -21,7 +22,7 @@ public enum ActivityType {
             case READ_TEXT -> 1f;
             case WATCH_CONTENT_WITH_SUBS, WRITE_TEXT -> 0.25f;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, ANKI -> 0.75f;
-            case SHADOWING, TEXTBOOK -> 0.5f;
+            case SHADOWING, TEXTBOOK, SCRIP_PRACTICE -> 0.5f;
             default -> 0;
         };
 
@@ -30,7 +31,7 @@ public enum ActivityType {
     public float getWritingCoefficient(){
 
         return switch (this) {
-            case WRITE_TEXT, WRITTEN_CONVERSATION -> 1f;
+            case WRITE_TEXT, SCRIP_PRACTICE -> 1f;
             default -> 0;
         };
     }
@@ -39,7 +40,7 @@ public enum ActivityType {
 
         return switch (this) {
             case SHADOWING, PREPARED_SPEECH -> 0.875f;
-            case ANKI -> 0.125f;
+            case ANKI -> 0.25f;
             case SPOKEN_CONVERSATION -> 1f;
             default -> 0;
         };
@@ -59,29 +60,19 @@ public enum ActivityType {
     public float getGrindingCoefficient(){
 
         return switch (this) {
-            case READ_TEXT, WATCH_CONTENT_WITH_SUBS, WRITE_TEXT, TEXTBOOK -> 0.25f;
+            case READ_TEXT, WATCH_CONTENT_WITH_SUBS, WRITE_TEXT, TEXTBOOK, SCRIP_PRACTICE -> 0.25f;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, SHADOWING, PREPARED_SPEECH, COMPREHENSIBLE_INPUT_WITHOUT_SUBS,
                  WATCH_CONTENT_WITHOUT_SUBS -> 0.5f;
             case ANKI -> 1f;
             case SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
         };
 
-    }
-    public float getNewCoefficient(){
-
-        return switch (this) {
-            case READ_TEXT, COMPREHENSIBLE_INPUT_WITH_SUBS -> 1f;
-            case WATCH_CONTENT_WITH_SUBS, SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
-            case SHADOWING, TEXTBOOK, WATCH_CONTENT_WITHOUT_SUBS -> 0.5f;
-            case ANKI, PREPARED_SPEECH, WRITE_TEXT -> 0.125f;
-            case COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> 0.875f;
-        };
 
     }
 
     public ActivityCategory getMainCategory(){
         return switch (this) {
-            case WRITE_TEXT -> ActivityCategory.WRITING;
+            case WRITE_TEXT, SCRIP_PRACTICE -> ActivityCategory.WRITING;
             case ANKI, TEXTBOOK, WRITTEN_CONVERSATION -> ActivityCategory.GRINDING;
             case SPOKEN_CONVERSATION, SHADOWING, PREPARED_SPEECH -> ActivityCategory.SPEAKING;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, WATCH_CONTENT_WITH_SUBS, WATCH_CONTENT_WITHOUT_SUBS,
@@ -95,16 +86,17 @@ public enum ActivityType {
         return switch (this){
             case ANKI -> "Anki";
             case WRITE_TEXT -> "Writing Text";
-            case TEXTBOOK ->  "Textbook Work";
-            case SHADOWING ->  "Shadowing";
-            case SPOKEN_CONVERSATION ->  "Spoken Conversation";
-            case READ_TEXT ->  "Reading Text";
-            case PREPARED_SPEECH ->    "Prepared Speech";
-            case WRITTEN_CONVERSATION ->   "Written Conversation";
-            case WATCH_CONTENT_WITH_SUBS ->   "Watching Content With Subtitles";
-            case WATCH_CONTENT_WITHOUT_SUBS ->    "Watching Content Without Subtitles";
-            case COMPREHENSIBLE_INPUT_WITH_SUBS ->    "Comprehensible Input With Subtitles";
-            case COMPREHENSIBLE_INPUT_WITHOUT_SUBS  ->    "Comprehensible Input Without Subtitles";
+            case TEXTBOOK -> "Textbook Work";
+            case SHADOWING -> "Shadowing";
+            case SPOKEN_CONVERSATION -> "Spoken Conversation";
+            case READ_TEXT -> "Reading Text";
+            case PREPARED_SPEECH -> "Prepared Speech";
+            case WRITTEN_CONVERSATION -> "Written Conversation";
+            case WATCH_CONTENT_WITH_SUBS -> "Watching Content With Subtitles";
+            case WATCH_CONTENT_WITHOUT_SUBS -> "Watching Content Without Subtitles";
+            case COMPREHENSIBLE_INPUT_WITH_SUBS -> "Comprehensible Input With Subtitles";
+            case COMPREHENSIBLE_INPUT_WITHOUT_SUBS  -> "Comprehensible Input Without Subtitles";
+            case SCRIP_PRACTICE -> "Script Practice";
         };
     }
 }

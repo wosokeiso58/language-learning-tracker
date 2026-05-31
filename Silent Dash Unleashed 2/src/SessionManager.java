@@ -8,12 +8,22 @@ public class SessionManager {
 
     private Language language;
     private Map<LocalDate, List<Session>> sessionsByDate;
-    private int xp;
+    private int readingXp;
+    private int grindingXp;
+    private int listeningXp;
+    private int speakingXp;
+    private int writingXp;
+
     LocalDate today = LocalDate.now();
 
     public SessionManager(Language language,int progress) {
         this.language = language;
         this.sessionsByDate = new HashMap<>();
+        readingXp = 0;
+        grindingXp = 0;
+        listeningXp = 0;
+        speakingXp = 0;
+        writingXp = 0;
     }
 
     public void logSession(Session session) {
@@ -25,15 +35,61 @@ public class SessionManager {
             this.sessionsByDate.get(session.getDate()).add(session);
         }
 
-        //TODO log xp with coefficients
+        float multiplier = checkVariety();
+
+        this.grindingXp += calculateXp(session,ActivityCategory.GRINDING,multiplier);
+        this.listeningXp += calculateXp(session,ActivityCategory.LISTENING,multiplier);
+        this.speakingXp += calculateXp(session,ActivityCategory.SPEAKING,multiplier);
+        this.writingXp += calculateXp(session,ActivityCategory.WRITING, multiplier);
+        this.readingXp += calculateXp(session,ActivityCategory.READING,multiplier);
 
 
+        System.out.println("Total grinding XP: "+ this.grindingXp);
+        System.out.println("Total listening XP: "+ this.listeningXp);
+        System.out.println("Total speaking XP: "+ this.speakingXp);
+        System.out.println("Total writing XP: " + this.writingXp);
+        System.out.println("Total reading XP: " + this.readingXp);
+        System.out.println("\nTotal XP: " + this.getXp());
 
+    }
+
+    public int calculateXp(Session session, ActivityCategory activityCategory, float multiplier) {
+        int xp = 0;
+        ActivityType activityType = session.getActivityType();
+        int minutes = session.getMinutes();
+        float coefficient;
+
+        switch (activityCategory) {
+            case GRINDING:
+                coefficient = activityType.getGrindingCoefficient();
+                xp = (int) (minutes*multiplier*coefficient*100);
+                System.out.println("Grinding XP gained: " + minutes + " (minutes) x " + multiplier +" (balance multiplier) x " + coefficient + " (grinding coefficient for " + activityType + ") x 100 = " + xp);
+                break;
+            case READING:
+                coefficient =  activityType.getReadingCoefficient();
+                xp = (int) (minutes*multiplier*coefficient*100);
+                System.out.println("Reading XP gained: " + minutes + " (minutes) x " + multiplier +" (balance multiplier) x " + coefficient + " (reading coefficient for " + activityType + ") x 100 = " + xp);
+                break;
+            case SPEAKING:
+                coefficient = activityType.getSpeakingCoefficient();
+                xp = (int) (minutes*multiplier*coefficient*100);
+                System.out.println("Speaking XP gained: " + minutes + " (minutes) x " + multiplier +" (balance multiplier) x " + coefficient + " (speaking coefficient for " + activityType + ") x 100 = " + xp);
+                break;
+            case WRITING:
+                coefficient = activityType.getWritingCoefficient();
+                xp = (int) (minutes*multiplier*coefficient*100);
+                System.out.println("Writing XP gained: " + minutes + " (minutes) x " + multiplier +" (balance multiplier) x " + coefficient + " (writing coefficient for " + activityType + ") x 100 = " + xp);
+                break;
+            case LISTENING:
+                coefficient = activityType.getListeningCoefficient();
+                xp = (int) (minutes*multiplier*coefficient*100);
+                System.out.println("Listening XP gained: " + minutes + " (minutes) x " + multiplier +" (balance multiplier) x " + coefficient + " (listening coefficient for " + activityType + ") x 100 = " + xp);
+        }
+        return xp;
 
 
     }
-    //TODO code ts maybe with current approach or maybe get the xp of each type and see how many are zero
-
+//TODO: fix ts i feel like it just does the 1.25 one no matter what
     public float checkVariety(){
         float speakingMinutes = 0;
         float grindingMinutes = 0;
@@ -64,31 +120,31 @@ public class SessionManager {
         }
 
         if (balanceCount == 16) {
-            System.out.println("You have a healthy balance of activities. Well done! XP multiplier: x1.25");
+            System.out.println("You have a healthy balance of activities. Well done! Balance XP multiplier: x1.25");
             return 1.25F;
         }
         else if(balanceCount == 15){
-            System.out.println("You have a solid balance of activities. You should be doing more listening. XP multiplier: x1.00");
+            System.out.println("You have a solid balance of activities. You should be doing more listening. Balance XP multiplier: x1.00");
             return 1F;
         }
         else if(balanceCount == 11){
-            System.out.println("You have a solid balance of activities. You should be doing more speaking. XP multiplier: x1.00");
+            System.out.println("You have a solid balance of activities. You should be doing more speaking. Balance XP multiplier: x1.00");
             return 1F;
         }
         else if(balanceCount == 6){
-            System.out.println("You have a solid balance of activities. You should be doing more grinding. XP multiplier: x1.00");
+            System.out.println("You have a solid balance of activities. You should be doing more grinding. Balance XP multiplier: x1.00");
             return 1F;
         }
         else if(balanceCount == 5){
-            System.out.println("You have a weak balance of activities. You should be doing more grinding and listening. XP multiplier: x0.75");
+            System.out.println("You have a weak balance of activities. You should be doing more grinding and listening. Balance XP multiplier: x0.75");
             return 0.75F;
         }
         else if(balanceCount == 10){
-            System.out.println("You have a weak balance of activities. You should be doing more speaking and listening. XP multiplier: x0.75");
+            System.out.println("You have a weak balance of activities. You should be doing more speaking and listening. Balance XP multiplier: x0.75");
             return 0.75F;
         }
         else if(balanceCount == 1){
-            System.out.println("You have a weak balance of activities. You should be doing more speaking and grinding. XP multiplier: x0.75");
+            System.out.println("You have a weak balance of activities. You should be doing more speaking and grinding. Balance XP multiplier: x0.75");
             return 0.75F;
         }
         else{
@@ -142,12 +198,14 @@ public class SessionManager {
         }
         return  sessions;
     }
-    /*//TODO (maybe) code the progress one by using the get minutes ones to calculate the progress cos you're smart like that
-    public int getProgress() {
-        return progress;
-    }
+
+    //TODO: code progress shnangles
+
+//    public int getProgress() {
+//        return progress;
+//    }
 
     public int getXp() {
-        return xp;
-    }*/
+        return readingXp+speakingXp+writingXp+listeningXp+grindingXp;
+    }
 }
