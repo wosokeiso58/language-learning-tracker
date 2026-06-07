@@ -35,7 +35,7 @@ public class SessionManager {
             this.sessionsByDate.get(session.getDate()).add(session);
         }
 
-        float multiplier = checkVariety();
+        double multiplier = checkVariety();
 
         this.grindingXp += calculateXp(session,ActivityCategory.GRINDING,multiplier);
         this.listeningXp += calculateXp(session,ActivityCategory.LISTENING,multiplier);
@@ -53,11 +53,11 @@ public class SessionManager {
 
     }
 
-    public int calculateXp(Session session, ActivityCategory activityCategory, float multiplier) {
+    public int calculateXp(Session session, ActivityCategory activityCategory, double multiplier) {
         int xp = 0;
         ActivityType activityType = session.getActivityType();
         int minutes = session.getMinutes();
-        float coefficient;
+        double coefficient;
 
         switch (activityCategory) {
             case GRINDING:
@@ -90,66 +90,67 @@ public class SessionManager {
 
     }
 //TODO: fix ts i feel like it just does the 1.25 one no matter what
-    public float checkVariety(){
-        float speakingMinutes = 0;
-        float grindingMinutes = 0;
-        float listeningMinutes = 0;
-        float totalMinutes = 0;
-        float balanceCount = 0;
+    public double checkVariety(){
+        double speakingMinutes = 0.0001;
+        double grindingMinutes = 0.0001;
+        double listeningMinutes = 0.0001;
+        double totalMinutes = 0.0001;
+        int balanceCount = 0;
 
         for(Session session : getSessionsFromLastNDays(14)){
             switch(session.getActivityType().getMainCategory()){
 
-                case SPEAKING -> speakingMinutes+=session.getMinutes();
+                case SPEAKING -> speakingMinutes += session.getMinutes();
                 case GRINDING -> grindingMinutes+=session.getMinutes();
                 case LISTENING ->  listeningMinutes+=session.getMinutes();
+
             }
             totalMinutes += session.getMinutes();
         }
 
-        if(totalMinutes / listeningMinutes > 0.2){
+        if(listeningMinutes/totalMinutes > 0.2){
             balanceCount +=1;
         }
 
-        if(totalMinutes / speakingMinutes > 0.2){
+        if(speakingMinutes/totalMinutes > 0.2){
             balanceCount +=5;
         }
 
-        if(totalMinutes / grindingMinutes > 0.2){
+        if(grindingMinutes/totalMinutes > 0.2){
             balanceCount +=10;
         }
 
         if (balanceCount == 16) {
             System.out.println("You have a healthy balance of activities. Well done! Balance XP multiplier: x1.25");
-            return 1.25F;
+            return 1.25;
         }
         else if(balanceCount == 15){
             System.out.println("You have a solid balance of activities. You should be doing more listening. Balance XP multiplier: x1.00");
-            return 1F;
+            return 1;
         }
         else if(balanceCount == 11){
             System.out.println("You have a solid balance of activities. You should be doing more speaking. Balance XP multiplier: x1.00");
-            return 1F;
+            return 1;
         }
         else if(balanceCount == 6){
             System.out.println("You have a solid balance of activities. You should be doing more grinding. Balance XP multiplier: x1.00");
-            return 1F;
+            return 1;
         }
         else if(balanceCount == 5){
             System.out.println("You have a weak balance of activities. You should be doing more grinding and listening. Balance XP multiplier: x0.75");
-            return 0.75F;
+            return 0.75;
         }
         else if(balanceCount == 10){
             System.out.println("You have a weak balance of activities. You should be doing more speaking and listening. Balance XP multiplier: x0.75");
-            return 0.75F;
+            return 0.75;
         }
         else if(balanceCount == 1){
             System.out.println("You have a weak balance of activities. You should be doing more speaking and grinding. Balance XP multiplier: x0.75");
-            return 0.75F;
+            return 0.75;
         }
         else{
             System.out.println("error");
-            return 0;
+            return 1;
         }
 
 

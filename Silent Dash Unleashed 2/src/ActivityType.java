@@ -16,32 +16,33 @@ public enum ActivityType {
 
     //TODO get main category
 
-    public float getReadingCoefficient(){
+    public double getReadingCoefficient(){
 
         return switch (this) {
-            case READ_TEXT -> 1f;
-            case WATCH_CONTENT_WITH_SUBS, WRITE_TEXT -> 0.25f;
-            case COMPREHENSIBLE_INPUT_WITH_SUBS, ANKI -> 0.75f;
-            case SHADOWING, TEXTBOOK, SCRIP_PRACTICE -> 0.5f;
+            case READ_TEXT -> 1;
+            case WATCH_CONTENT_WITH_SUBS, WRITE_TEXT -> 0.25;
+            case COMPREHENSIBLE_INPUT_WITH_SUBS, ANKI, WRITTEN_CONVERSATION -> 0.75;
+            case SHADOWING, TEXTBOOK, SCRIP_PRACTICE -> 0.5;
             default -> 0;
         };
 
     }
 
-    public float getWritingCoefficient(){
+    public double getWritingCoefficient(){
 
         return switch (this) {
-            case WRITE_TEXT, SCRIP_PRACTICE -> 1f;
+            case WRITE_TEXT, SCRIP_PRACTICE -> 1;
+            case WRITTEN_CONVERSATION -> 0.25;
             default -> 0;
         };
     }
 
-    public float getSpeakingCoefficient(){
+    public double getSpeakingCoefficient(){
 
         return switch (this) {
-            case SHADOWING, PREPARED_SPEECH -> 0.875f;
-            case ANKI -> 0.25f;
-            case SPOKEN_CONVERSATION -> 1f;
+            case SHADOWING, PREPARED_SPEECH -> 0.875;
+            case ANKI, WRITTEN_CONVERSATION -> 0.25;
+            case SPOKEN_CONVERSATION -> 1;
             default -> 0;
         };
 
