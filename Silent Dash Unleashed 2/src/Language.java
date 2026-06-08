@@ -76,14 +76,11 @@ public enum Language {
                 case JAPANESE -> 6000;
             };
 
-            case FLUENCY -> switch (this) {
-                case ESPERANTO -> 300;
-                case FRENCH, SPANISH -> 875;
-                case GERMAN -> 1050;
-                case RUSSIAN, VIETNAMESE -> 1500;
-                case KOREAN -> 3500;
-                case JAPANESE, MANDARIN -> 4000;
-            };
+            case FLUENCY -> {
+                int b2 = getHours(Level.B2);
+                int c1 = getHours(Level.C1);
+                yield b2 + (int) ((c1 - b2) * 0.7);
+            }
         };
     }
 
@@ -92,7 +89,7 @@ public enum Language {
     }
 
     public int getXp(Level level){
-        return this.getMinutes(level)*100;
+        return this.getMinutes(level)*175;
     }
 
 

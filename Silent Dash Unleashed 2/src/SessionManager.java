@@ -19,6 +19,7 @@ public class SessionManager {
     public SessionManager(Language language,int progress) {
         this.language = language;
         this.sessionsByDate = new HashMap<>();
+
         readingXp = 0;
         grindingXp = 0;
         listeningXp = 0;
@@ -27,6 +28,7 @@ public class SessionManager {
     }
 
     public void logSession(Session session) {
+
         if (this.sessionsByDate.containsKey(session.getDate())) {
             this.sessionsByDate.get(session.getDate()).add(session);
         }
@@ -37,11 +39,28 @@ public class SessionManager {
 
         double multiplier = checkVariety();
 
-        this.grindingXp += calculateXp(session,ActivityCategory.GRINDING,multiplier);
-        this.listeningXp += calculateXp(session,ActivityCategory.LISTENING,multiplier);
-        this.speakingXp += calculateXp(session,ActivityCategory.SPEAKING,multiplier);
-        this.writingXp += calculateXp(session,ActivityCategory.WRITING, multiplier);
-        this.readingXp += calculateXp(session,ActivityCategory.READING,multiplier);
+        int gainedXp = 0;
+
+
+        int gainedGrindingXp = calculateXp(session,ActivityCategory.GRINDING,multiplier);
+        int gainedListeningXp = calculateXp(session,ActivityCategory.LISTENING,multiplier);
+        int gainedSpeakingXp = calculateXp(session,ActivityCategory.SPEAKING,multiplier);
+        int gainedWritingXp = calculateXp(session,ActivityCategory.WRITING, multiplier);
+        int gainedReadingXp = calculateXp(session,ActivityCategory.READING,multiplier);
+
+        gainedXp += gainedGrindingXp;
+        gainedXp += gainedListeningXp;
+        gainedXp += gainedSpeakingXp;
+        gainedXp += gainedWritingXp;
+        gainedXp += gainedReadingXp;
+
+        grindingXp += gainedGrindingXp;
+        listeningXp += gainedListeningXp;
+        speakingXp += gainedSpeakingXp;
+        writingXp += gainedWritingXp;
+        readingXp += gainedReadingXp;
+
+        System.out.println("Gained Xp: " + gainedXp);
 
 
         System.out.println("Total grinding XP: "+ this.grindingXp);
@@ -89,12 +108,12 @@ public class SessionManager {
 
 
     }
-//TODO: fix ts i feel like it just does the 1.25 one no matter what
+
     public double checkVariety(){
-        double speakingMinutes = 0.0001;
-        double grindingMinutes = 0.0001;
-        double listeningMinutes = 0.0001;
-        double totalMinutes = 0.0001;
+        double speakingMinutes = 0;
+        double grindingMinutes = 0;
+        double listeningMinutes = 0;
+        double totalMinutes = 0;
         int balanceCount = 0;
 
         for(Session session : getSessionsFromLastNDays(14)){
@@ -200,11 +219,17 @@ public class SessionManager {
         return  sessions;
     }
 
-    //TODO: code progress shnangles
+    //TODO: code progress shnangles, specific to activity categories and also take into account consistency, breaks
 
-//    public int getProgress() {
-//        return progress;
-//    }
+    public void displayGeneralProgress(Level level) {
+        int ceiling = language.getXp(level);
+        int xp = getXp();
+        double percentage = ((double) xp /ceiling) * 100;
+        double roundedPercentage = Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
+
+        System.out.println("XP to "+ level.toString() + ": " + xp + "/" + ceiling +"\nProgress: " + roundedPercentage + "%");
+
+    }
 
     public int getXp() {
         return readingXp+speakingXp+writingXp+listeningXp+grindingXp;

@@ -19,4 +19,18 @@ A chart should take the current progressed logged and formulate a visual indicat
 
 ## Future Ideas
 
-- ### 
+- ###
+
+S+ spoken convo 2.25
+
+S:CI without subsCI with subs anki 2
+
+A:shadowing written convo text prepared speech 1.75
+
+B:Read text 1.5
+
+C:textbook 1.25
+
+D:content with subs 1
+
+E:content without subs script practice 0.75

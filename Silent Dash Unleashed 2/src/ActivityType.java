@@ -8,21 +8,20 @@ public enum ActivityType {
     SHADOWING,
     SPOKEN_CONVERSATION,
     WRITTEN_CONVERSATION,
-    WRITE_TEXT,
-    SCRIP_PRACTICE,
+    HANDWRITE_TEXT,
+    SCRIPT_PRACTICE,
     ANKI,
     TEXTBOOK,
     PREPARED_SPEECH;
 
-    //TODO get main category
 
     public double getReadingCoefficient(){
 
         return switch (this) {
             case READ_TEXT -> 1;
-            case WATCH_CONTENT_WITH_SUBS, WRITE_TEXT -> 0.25;
-            case COMPREHENSIBLE_INPUT_WITH_SUBS, ANKI, WRITTEN_CONVERSATION -> 0.75;
-            case SHADOWING, TEXTBOOK, SCRIP_PRACTICE -> 0.5;
+            case WATCH_CONTENT_WITH_SUBS, HANDWRITE_TEXT, SHADOWING, SCRIPT_PRACTICE -> 0.25;
+            case COMPREHENSIBLE_INPUT_WITH_SUBS, WRITTEN_CONVERSATION -> 0.75;
+            case TEXTBOOK, ANKI, PREPARED_SPEECH -> 0.5;
             default -> 0;
         };
 
@@ -31,8 +30,10 @@ public enum ActivityType {
     public double getWritingCoefficient(){
 
         return switch (this) {
-            case WRITE_TEXT, SCRIP_PRACTICE -> 1;
+            case HANDWRITE_TEXT -> 1;
             case WRITTEN_CONVERSATION -> 0.25;
+            case SCRIPT_PRACTICE -> 0.5;
+            case TEXTBOOK -> 0.75;
             default -> 0;
         };
     }
@@ -40,32 +41,31 @@ public enum ActivityType {
     public double getSpeakingCoefficient(){
 
         return switch (this) {
-            case SHADOWING, PREPARED_SPEECH -> 0.875;
-            case ANKI, WRITTEN_CONVERSATION -> 0.25;
+            case PREPARED_SPEECH, SHADOWING -> 0.75;
+            case WRITTEN_CONVERSATION, ANKI, COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> 0.25;
             case SPOKEN_CONVERSATION -> 1;
             default -> 0;
         };
 
     }
-    public float getListeningCoefficient(){
+    public double getListeningCoefficient(){
 
         return switch (this) {
-            case WATCH_CONTENT_WITH_SUBS, ANKI -> 0.75f;
-            case COMPREHENSIBLE_INPUT_WITH_SUBS -> 0.875f;
-            case COMPREHENSIBLE_INPUT_WITHOUT_SUBS, SPOKEN_CONVERSATION -> 1f;
-            case SHADOWING -> 0.5f;
+            case WATCH_CONTENT_WITH_SUBS, ANKI -> 0.50;
+            case COMPREHENSIBLE_INPUT_WITH_SUBS, SPOKEN_CONVERSATION -> 0.75;
+            case SHADOWING, WATCH_CONTENT_WITHOUT_SUBS -> 0.25;
+            case COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> 1;
             default -> 0;
         };
 
     }
-    public float getGrindingCoefficient(){
+    public double getGrindingCoefficient(){
 
         return switch (this) {
-            case READ_TEXT, WATCH_CONTENT_WITH_SUBS, WRITE_TEXT, TEXTBOOK, SCRIP_PRACTICE -> 0.25f;
-            case COMPREHENSIBLE_INPUT_WITH_SUBS, SHADOWING, PREPARED_SPEECH, COMPREHENSIBLE_INPUT_WITHOUT_SUBS,
-                 WATCH_CONTENT_WITHOUT_SUBS -> 0.5f;
-            case ANKI -> 1f;
-            case SPOKEN_CONVERSATION, WRITTEN_CONVERSATION -> 0.75f;
+            case WATCH_CONTENT_WITH_SUBS, HANDWRITE_TEXT, SCRIPT_PRACTICE -> 0.25;
+            case WRITTEN_CONVERSATION, COMPREHENSIBLE_INPUT_WITH_SUBS, SHADOWING, PREPARED_SPEECH, WATCH_CONTENT_WITHOUT_SUBS, SPOKEN_CONVERSATION, READ_TEXT, COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> 0.5;
+            case ANKI -> 0.75;
+            default -> 0;
         };
 
 
@@ -73,7 +73,7 @@ public enum ActivityType {
 
     public ActivityCategory getMainCategory(){
         return switch (this) {
-            case WRITE_TEXT, SCRIP_PRACTICE -> ActivityCategory.WRITING;
+            case HANDWRITE_TEXT, SCRIPT_PRACTICE -> ActivityCategory.WRITING;
             case ANKI, TEXTBOOK, WRITTEN_CONVERSATION -> ActivityCategory.GRINDING;
             case SPOKEN_CONVERSATION, SHADOWING, PREPARED_SPEECH -> ActivityCategory.SPEAKING;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, WATCH_CONTENT_WITH_SUBS, WATCH_CONTENT_WITHOUT_SUBS,
@@ -86,7 +86,7 @@ public enum ActivityType {
     public String toString() {
         return switch (this){
             case ANKI -> "Anki";
-            case WRITE_TEXT -> "Writing Text";
+            case HANDWRITE_TEXT -> "Writing Text";
             case TEXTBOOK -> "Textbook Work";
             case SHADOWING -> "Shadowing";
             case SPOKEN_CONVERSATION -> "Spoken Conversation";
@@ -97,7 +97,7 @@ public enum ActivityType {
             case WATCH_CONTENT_WITHOUT_SUBS -> "Watching Content Without Subtitles";
             case COMPREHENSIBLE_INPUT_WITH_SUBS -> "Comprehensible Input With Subtitles";
             case COMPREHENSIBLE_INPUT_WITHOUT_SUBS  -> "Comprehensible Input Without Subtitles";
-            case SCRIP_PRACTICE -> "Script Practice";
+            case SCRIPT_PRACTICE -> "Script Practice";
         };
     }
 }
