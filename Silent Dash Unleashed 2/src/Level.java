@@ -1,4 +1,5 @@
 public enum Level {
+    BEGINNER,
     A1,
     A2,
     B1,
@@ -10,6 +11,7 @@ public enum Level {
     @Override
     public String toString() {
         return switch (this) {
+            case BEGINNER -> "beginner";
             case A1 -> "A1";
             case A2 -> "A2";
             case B1 -> "B1";

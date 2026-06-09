@@ -12,6 +12,8 @@ public enum Language {
     public int getHours(Level level) {
         return switch (level) {
 
+            case BEGINNER -> 0;
+
             case A1 -> switch (this) {
                 case ESPERANTO -> 30;
                 case FRENCH, SPANISH -> 100;
@@ -88,7 +90,7 @@ public enum Language {
         return this.getHours(level)*60;
     }
 
-    public int getXp(Level level){
+    public int getXpCeiling(Level level){
         return this.getMinutes(level)*175;
     }
 

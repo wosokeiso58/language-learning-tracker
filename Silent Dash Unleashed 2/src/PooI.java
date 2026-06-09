@@ -9,7 +9,9 @@ public class PooI {
         Session session2 = new Session(64, ActivityType.COMPREHENSIBLE_INPUT_WITHOUT_SUBS,Language.MANDARIN,LocalDate.of(2026,5,28));
         Session session3 = new Session(14, ActivityType.WRITTEN_CONVERSATION,Language.MANDARIN,LocalDate.of(2026,5,27));
         Session session4 = new Session(35,ActivityType.SPOKEN_CONVERSATION,Language.MANDARIN,LocalDate.of(2026,5,28));
-        SessionManager sessionManager = new SessionManager(Language.MANDARIN,0);
+
+        SessionManager sessionManager = new SessionManager(Language.MANDARIN,450,150,150,150,150);
+
         sessionManager.logSession(session1);
         sessionManager.logSession(session2);
         sessionManager.logSession(session3);
@@ -26,6 +28,9 @@ public class PooI {
         sessionManager.displayGeneralProgress(Level.C1);
         sessionManager.displayGeneralProgress(Level.C2);
         sessionManager.displayGeneralProgress(Level.FLUENCY);
+
+        sessionManager.displayLevelProgress(ActivityCategory.GRINDING);
+        sessionManager.displayLevelProgress(ActivityCategory.SPEAKING);
 
     }
 }
