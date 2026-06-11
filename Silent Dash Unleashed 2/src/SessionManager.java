@@ -5,6 +5,15 @@ public class SessionManager {
 
     private final Language language;
     private final Map<LocalDate, List<Session>> sessionsByDate;
+
+    private int ID = 0;
+    private int activeStreak;
+    private int inactiveStreak;
+    private LocalDate lastStreakUpdate;
+
+    private static final double BASE_RETENTION = 1000.0;
+    private static final double INACTIVITY_WEIGHT = 50.0;
+
     private int readingXp;
     private int grindingXp;
     private int listeningXp;
@@ -21,9 +30,13 @@ public class SessionManager {
 
     public SessionManager(Language language, int grindingHours, int speakingHours, int readingHours, int listeningHours, int writingHours) {
         this.language = language;
-        this.sessionsByDate = new HashMap<>();
-
+        sessionsByDate = new HashMap<>();
         startGrindingMinutes = grindingHours*60;
+
+        activeStreak = 0;
+        inactiveStreak = 0;
+        lastStreakUpdate = LocalDate.of(2026,6,1);
+
         startListeningMinutes = listeningHours*60;
         startSpeakingMinutes = speakingHours*60;
         startWritingMinutes = writingHours*60;
@@ -44,7 +57,10 @@ public class SessionManager {
         System.out.println("Estimated Overall level: " + getLevel());
     }
 
-    public void logSession(Session session) {
+    public void logSession(int minutes, ActivityType activityType, LocalDate date) {
+
+        Session session  = new Session(ID, minutes, activityType, date);
+        ID++;
 
         if (this.sessionsByDate.containsKey(session.getDate())) {
             this.sessionsByDate.get(session.getDate()).add(session);
@@ -86,6 +102,10 @@ public class SessionManager {
         System.out.println("Total writing XP: " + this.writingXp);
         System.out.println("Total reading XP: " + this.readingXp);
         System.out.println("\nTotal XP: " + this.getXp());
+
+        if(lastStreakUpdate.isBefore(today)){
+            dailyUpdate();
+        }
 
     }
 
@@ -236,7 +256,55 @@ public class SessionManager {
         return  sessions;
     }
 
-    //TODO: code progress shnangles, specific to activity categories and also take into account consistency, breaks
+    public void dailyUpdate(){
+        System.out.println("Updating daily data");
+        updateStreak();
+
+        double consistencyBonus = getConsistencyBonus();
+        double retention = getRetention();
+
+        readingXp = (int) (readingXp * consistencyBonus);
+        speakingXp = (int) (speakingXp * consistencyBonus);
+        writingXp = (int) (writingXp * consistencyBonus);
+        grindingXp = (int) (grindingXp * consistencyBonus);
+        listeningXp = (int) (listeningXp * consistencyBonus);
+
+        readingXp = (int) (readingXp * retention);
+        speakingXp = (int) (speakingXp * retention);
+        writingXp = (int) (writingXp * retention);
+        grindingXp = (int) (grindingXp * retention);
+        listeningXp = (int) (listeningXp * retention);
+
+        lastStreakUpdate=today;
+
+
+    }
+
+    public void updateStreak() {
+        for (LocalDate date = lastStreakUpdate; date.isBefore(today); date = date.plusDays(1)) {
+            if (sessionsByDate.get(date).isEmpty()) {
+                inactiveStreak++;
+                activeStreak = 0;
+            } else {
+                inactiveStreak = 0;
+                activeStreak++;
+            }
+        }
+    }
+
+    public double getRetention() {
+
+        double totalMinutes = getTotalMinutes();
+
+        return (totalMinutes + BASE_RETENTION)
+                / (totalMinutes + BASE_RETENTION
+                + (INACTIVITY_WEIGHT * inactiveStreak));
+    }
+
+    public double getConsistencyBonus() {
+
+        return 1 + (0.05 * Math.log(activeStreak + 1));
+    }
 
 
     public void displayGeneralProgress(Level level) {
@@ -263,7 +331,7 @@ public class SessionManager {
             case C1 -> level = Level.C2;
         }
 
-        int ceiling = language.getXpCeiling(level);
+        double ceiling = language.getXpCeiling(level);
 
 
         if (activityCategory == ActivityCategory.WRITING) {
@@ -276,11 +344,11 @@ public class SessionManager {
 
         int xp = getXp(activityCategory);
 
-        double percentage = ((double) xp /ceiling) * 100;
+        double percentage = ( xp /ceiling) * 100;
 
         double roundedPercentage = Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
 
-        System.out.println(activityCategory + " XP to " + level + ": " + xp + "/" + ceiling +"\nProgress: " + roundedPercentage + "%");
+        System.out.println(activityCategory + " XP to " + level + ": " + xp + "/" + (int) ceiling +"\nProgress: " + roundedPercentage + "%");
 
         if(roundedPercentage > 100){
             System.out.println("Your " + activityCategory + " XP has been reached. Consider doing activities of other categories so your general level and your " + activityCategory + " level match.");
@@ -297,11 +365,11 @@ public class SessionManager {
 
     public int getXp(ActivityCategory activityCategory) {
         return switch (activityCategory){
-            case LISTENING ->  listeningXp;
-            case GRINDING ->   grindingXp;
-            case SPEAKING ->   speakingXp;
-            case READING ->  readingXp;
-            case WRITING ->   writingXp;
+            case LISTENING -> listeningXp;
+            case GRINDING -> grindingXp;
+            case SPEAKING -> speakingXp;
+            case READING -> readingXp;
+            case WRITING -> writingXp;
         };
     }
 
@@ -381,4 +449,59 @@ public class SessionManager {
         }
     }
 
+    public void removeSession(LocalDate date, int sessionID) {
+        List<Session> sessionsOnDate = sessionsByDate.get(date);
+        sessionsOnDate.removeIf(
+                session -> session.getSessionID() == sessionID
+        );
+    }
+
+    public void editSession(LocalDate date, int sessionID, LocalDate date2) {
+        List<Session> sessionsOnDate = sessionsByDate.get(date);
+        if (!sessionsOnDate.isEmpty()) {
+            for(Session session : sessionsOnDate) {
+                if(session.getSessionID() == sessionID) {
+                    session.setDate(date2);
+                }
+            }
+        }
+    }
+
+    public void editSession(LocalDate date, int sessionID, ActivityType activityType) {
+        List<Session> sessionsOnDate = sessionsByDate.get(date);
+        if (!sessionsOnDate.isEmpty()) {
+            for(Session session : sessionsOnDate) {
+                if(session.getSessionID() == sessionID) {
+                    session.setActivityType(activityType);
+                }
+            }
+        }
+    }
+
+    public void editSession(LocalDate date, int sessionID, int minutes) {
+        List<Session> sessionsOnDate = sessionsByDate.get(date);
+        if (!sessionsOnDate.isEmpty()) {
+            for(Session session : sessionsOnDate) {
+                if(session.getSessionID() == sessionID) {
+                    session.setMinutes(minutes);
+                }
+            }
+        }
+    }
+
+    public int getActiveStreak(){
+        return activeStreak;
+    }
+    public int getInactiveStreak(){
+        return inactiveStreak;
+    }
+    public void setLastStreakUpdate(LocalDate date){
+        lastStreakUpdate = date;
+    }
+
+    public void setToday(LocalDate date) {
+        today = date;
+    }
+
+    //TODO: code edit session and delete session
 }

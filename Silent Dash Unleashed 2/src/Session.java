@@ -2,18 +2,18 @@ import java.time.LocalDate;
 
 public class Session {
 
+    private final int sessionID;
+
     private int minutes;
 
     private ActivityType activityType;
 
-    private Language language;
-
     public LocalDate date;
 
-    public Session(int minutes, ActivityType activityType, Language language, LocalDate date) {
+    public Session(int sessionID, int minutes, ActivityType activityType, LocalDate date) {
+        this.sessionID = sessionID;
         this.minutes = minutes;
         this.activityType = activityType;
-        this.language = language;
         this.date = date;
     }
 
@@ -23,10 +23,23 @@ public class Session {
     public ActivityType getActivityType() {
         return activityType;
     }
-    public Language getLanguage() {
-        return language;
+
+    public int getSessionID() {
+        return sessionID;
     }
+
     public LocalDate getDate() {
         return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
     }
 }

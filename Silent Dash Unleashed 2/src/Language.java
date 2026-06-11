@@ -91,7 +91,7 @@ public enum Language {
     }
 
     public int getXpCeiling(Level level){
-        return this.getMinutes(level)*175;
+        return this.getMinutes(level)*180;
     }
 
 
