@@ -8,6 +8,8 @@ public class Session {
 
     private ActivityType activityType;
 
+    private int Xp;
+
     public LocalDate date;
 
     public Session(int sessionID, int minutes, ActivityType activityType, LocalDate date) {
@@ -15,6 +17,7 @@ public class Session {
         this.minutes = minutes;
         this.activityType = activityType;
         this.date = date;
+        Xp = 0;
     }
 
     public int getMinutes() {
@@ -41,5 +44,11 @@ public class Session {
 
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
+    }
+    public int getXp() {
+        return Xp;
+    }
+    public void setXp(int Xp) {
+        this.Xp = Xp;
     }
 }

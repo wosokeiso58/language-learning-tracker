@@ -44,6 +44,7 @@ public class PooI {
         System.out.println("Active Streak: "+sessionManager.getActiveStreak());
         System.out.println("Inactive Streak: "+sessionManager.getInactiveStreak());
 
+        System.out.println(sessionManager.getSessionsOfDayToString(LocalDate.of(2026,6,1)));
 //
 //        sessionManager.displayGeneralProgress(Level.A1);
 //        sessionManager.displayGeneralProgress(Level.A2);

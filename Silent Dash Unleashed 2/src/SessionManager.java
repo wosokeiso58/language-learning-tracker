@@ -30,7 +30,7 @@ public class SessionManager {
 
     public SessionManager(Language language, int grindingHours, int speakingHours, int readingHours, int listeningHours, int writingHours) {
         this.language = language;
-        sessionsByDate = new HashMap<>();
+        sessionsByDate  = new HashMap<>();
         startGrindingMinutes = grindingHours*60;
 
         activeStreak = 0;
@@ -94,6 +94,7 @@ public class SessionManager {
         readingXp += gainedReadingXp;
 
         System.out.println("Gained Xp: " + gainedXp);
+        session.setXp(gainedXp);
 
 
         System.out.println("Total grinding XP: "+ this.grindingXp);
@@ -281,8 +282,9 @@ public class SessionManager {
     }
 
     public void updateStreak() {
+
         for (LocalDate date = lastStreakUpdate; date.isBefore(today); date = date.plusDays(1)) {
-            if (sessionsByDate.get(date).isEmpty()) {
+            if ((!sessionsByDate.containsKey(date)||(sessionsByDate.get(date).isEmpty()))){
                 inactiveStreak++;
                 activeStreak = 0;
             } else {
@@ -489,6 +491,16 @@ public class SessionManager {
         }
     }
 
+    public String getSessionsOfDayToString(LocalDate date) {
+        String output = "";
+        int count = 1;
+        for(Session session : sessionsByDate.get(date)) {
+            output = output + "Stats for session " + count + " of day:\nMinutes: "+ session.getMinutes() + "\nActivity type: " + session.getActivityType() + "\nXp gained: " + session.getXp() + "\n";
+            count++;
+        }
+        return output;
+    }
+
     public int getActiveStreak(){
         return activeStreak;
     }
@@ -503,5 +515,4 @@ public class SessionManager {
         today = date;
     }
 
-    //TODO: code edit session and delete session
 }
