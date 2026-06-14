@@ -100,4 +100,6 @@ public enum ActivityType {
             case SCRIPT_PRACTICE -> "Script Practice";
         };
     }
+
+
 }
