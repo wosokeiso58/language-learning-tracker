@@ -19,6 +19,8 @@ A chart should take the current progressed logged and formulate a visual indicat
 
 ## Future Ideas
 
+icon in the top right with current XP, level etc
+
 - ###
 
 S+ spoken convo 2.25

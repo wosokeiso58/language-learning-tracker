@@ -74,7 +74,7 @@ public class SessionManager {
         Variety variety = new Variety();
         variety.checkVariety();
         double multiplier = variety.getVariety();
-        stringBuilder.append(variety.getMessage());
+        stringBuilder.append(variety.getMessage()).append("\n\n");
 
         int gainedXp = 0;
 
@@ -82,19 +82,19 @@ public class SessionManager {
 
         xpCalculator.calculateXp(session, ActivityCategory.GRINDING, multiplier);
         int gainedGrindingXp = xpCalculator.getCalculatedXp();
-        stringBuilder.append(xpCalculator.getMessage());
+        stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.LISTENING, multiplier);
         int gainedListeningXp = xpCalculator.getCalculatedXp();
-        stringBuilder.append(xpCalculator.getMessage());
+        stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.SPEAKING, multiplier);
         int gainedSpeakingXp = xpCalculator.getCalculatedXp();
-        stringBuilder.append(xpCalculator.getMessage());
+        stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.WRITING, multiplier);
         int gainedWritingXp =  xpCalculator.getCalculatedXp();
-        stringBuilder.append(xpCalculator.getMessage());
+        stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.READING, multiplier);
         int gainedReadingXp = xpCalculator.getCalculatedXp();
-        stringBuilder.append(xpCalculator.getMessage());
+        stringBuilder.append(xpCalculator.getMessage()).append("\n");
 
         gainedXp += gainedGrindingXp;
         gainedXp += gainedListeningXp;
@@ -127,7 +127,7 @@ public class SessionManager {
 
     }
 
-    public static class XpCalculator {
+    public class XpCalculator {
 
         private int calculatedXp;
         private String message;
@@ -181,42 +181,6 @@ public class SessionManager {
 
     }
 
-//    public int calculateXp(Session session, ActivityCategory activityCategory, double multiplier) {
-//        int xp = 0;
-//        ActivityType activityType = session.getActivityType();
-//        int minutes = session.getMinutes();
-//        double coefficient;
-//
-//        switch (activityCategory) {
-//            case GRINDING:
-//                coefficient = activityType.getGrindingCoefficient();
-//                xp = (int) (minutes * multiplier * coefficient * 100);
-//                System.out.println("Grinding XP gained: " + minutes + " (minutes) x " + multiplier + " (balance multiplier) x " + coefficient + " (grinding coefficient for " + activityType + ") x 100 = " + xp);
-//                break;
-//            case READING:
-//                coefficient = activityType.getReadingCoefficient();
-//                xp = (int) (minutes * multiplier * coefficient * 100);
-//                System.out.println("Reading XP gained: " + minutes + " (minutes) x " + multiplier + " (balance multiplier) x " + coefficient + " (reading coefficient for " + activityType + ") x 100 = " + xp);
-//                break;
-//            case SPEAKING:
-//                coefficient = activityType.getSpeakingCoefficient();
-//                xp = (int) (minutes * multiplier * coefficient * 100);
-//                System.out.println("Speaking XP gained: " + minutes + " (minutes) x " + multiplier + " (balance multiplier) x " + coefficient + " (speaking coefficient for " + activityType + ") x 100 = " + xp);
-//                break;
-//            case WRITING:
-//                coefficient = activityType.getWritingCoefficient();
-//                xp = (int) (minutes * multiplier * coefficient * 100);
-//                System.out.println("Writing XP gained: " + minutes + " (minutes) x " + multiplier + " (balance multiplier) x " + coefficient + " (writing coefficient for " + activityType + ") x 100 = " + xp);
-//                break;
-//            case LISTENING:
-//                coefficient = activityType.getListeningCoefficient();
-//                xp = (int) (minutes * multiplier * coefficient * 100);
-//                System.out.println("Listening XP gained: " + minutes + " (minutes) x " + multiplier + " (balance multiplier) x " + coefficient + " (listening coefficient for " + activityType + ") x 100 = " + xp);
-//        }
-//        return xp;
-//
-//
-//    }
 
     public class Variety {
 
