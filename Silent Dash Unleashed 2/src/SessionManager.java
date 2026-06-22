@@ -74,6 +74,7 @@ public class SessionManager {
         Variety variety = new Variety();
         variety.checkVariety();
         double multiplier = variety.getVariety();
+        session.setVariety(multiplier);
         stringBuilder.append(variety.getMessage()).append("\n\n");
 
         int gainedXp = 0;
@@ -82,18 +83,23 @@ public class SessionManager {
 
         xpCalculator.calculateXp(session, ActivityCategory.GRINDING, multiplier);
         int gainedGrindingXp = xpCalculator.getCalculatedXp();
+        session.setXp(ActivityCategory.GRINDING, gainedGrindingXp);
         stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.LISTENING, multiplier);
         int gainedListeningXp = xpCalculator.getCalculatedXp();
+        session.setXp(ActivityCategory.LISTENING, gainedListeningXp);
         stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.SPEAKING, multiplier);
         int gainedSpeakingXp = xpCalculator.getCalculatedXp();
+        session.setXp(ActivityCategory.SPEAKING, gainedSpeakingXp);
         stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.WRITING, multiplier);
-        int gainedWritingXp =  xpCalculator.getCalculatedXp();
+        int gainedWritingXp = xpCalculator.getCalculatedXp();
+        session.setXp(ActivityCategory.WRITING, gainedWritingXp);
         stringBuilder.append(xpCalculator.getMessage()).append("\n");
         xpCalculator.calculateXp(session, ActivityCategory.READING, multiplier);
         int gainedReadingXp = xpCalculator.getCalculatedXp();
+        session.setXp(ActivityCategory.READING, gainedReadingXp);
         stringBuilder.append(xpCalculator.getMessage()).append("\n");
 
         gainedXp += gainedGrindingXp;
@@ -132,12 +138,12 @@ public class SessionManager {
         private int calculatedXp;
         private String message;
 
-        public XpCalculator(){
+        public XpCalculator() {
             calculatedXp = 0;
             message = "";
         }
 
-        public void calculateXp(Session session, ActivityCategory activityCategory, double multiplier){
+        public void calculateXp(Session session, ActivityCategory activityCategory, double multiplier) {
             ActivityType activityType = session.getActivityType();
             int minutes = session.getMinutes();
             double coefficient;
@@ -170,11 +176,12 @@ public class SessionManager {
             }
 
         }
-        public int getCalculatedXp(){
+
+        public int getCalculatedXp() {
             return calculatedXp;
         }
 
-        public String getMessage(){
+        public String getMessage() {
             return message;
         }
 
@@ -192,7 +199,7 @@ public class SessionManager {
             this.message = "";
         }
 
-        public void checkVariety(){
+        public void checkVariety() {
             double speakingMinutes = 0;
             double grindingMinutes = 0;
             double listeningMinutes = 0;
@@ -249,7 +256,6 @@ public class SessionManager {
             }
 
 
-
         }
 
         public double getVariety() {
@@ -303,6 +309,14 @@ public class SessionManager {
             }
         }
         return sessions;
+    }
+
+    public List<Session> getSessionsByDate(LocalDate date) {
+        if (sessionsByDate.containsKey(date)) {
+            return sessionsByDate.get(date);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public void dailyUpdate() {
@@ -503,6 +517,81 @@ public class SessionManager {
         );
     }
 
+    public String editSession(LocalDate date, Session session, LocalDate newDate, ActivityType activityType, int minutes) {
+        System.out.println("Before editing" + this.getSessionsByDate(newDate).size());
+        if (session != null) {
+
+            StringBuilder stringBuilder = new StringBuilder();
+            session.setActivityType(activityType);
+            session.setMinutes(minutes);
+            session.setDate(newDate);
+            double multiplier = session.getVariety();
+
+            if (!date.equals(session.getDate())) {
+                System.out.println("Dates are different.");
+                return (logSession(minutes, activityType, newDate));
+            } else {
+
+                grindingXp -= (int) (multiplier * session.getXp(ActivityCategory.GRINDING));
+                readingXp -= (int) (multiplier * session.getXp(ActivityCategory.READING));
+                speakingXp -= (int) (multiplier * session.getXp(ActivityCategory.SPEAKING));
+                writingXp -= (int) (multiplier * session.getXp(ActivityCategory.WRITING));
+                listeningXp -= (int) (multiplier * session.getXp(ActivityCategory.LISTENING));
+                XpCalculator xpCalculator = new XpCalculator();
+
+                xpCalculator.calculateXp(session, ActivityCategory.GRINDING, multiplier);
+                int gainedGrindingXp = xpCalculator.getCalculatedXp();
+                session.setXp(ActivityCategory.GRINDING, gainedGrindingXp);
+                stringBuilder.append(xpCalculator.getMessage()).append("\n");
+                xpCalculator.calculateXp(session, ActivityCategory.LISTENING, multiplier);
+                int gainedListeningXp = xpCalculator.getCalculatedXp();
+                session.setXp(ActivityCategory.LISTENING, gainedListeningXp);
+                stringBuilder.append(xpCalculator.getMessage()).append("\n");
+                xpCalculator.calculateXp(session, ActivityCategory.SPEAKING, multiplier);
+                int gainedSpeakingXp = xpCalculator.getCalculatedXp();
+                session.setXp(ActivityCategory.SPEAKING, gainedSpeakingXp);
+                stringBuilder.append(xpCalculator.getMessage()).append("\n");
+                xpCalculator.calculateXp(session, ActivityCategory.WRITING, multiplier);
+                int gainedWritingXp = xpCalculator.getCalculatedXp();
+                session.setXp(ActivityCategory.WRITING, gainedWritingXp);
+                stringBuilder.append(xpCalculator.getMessage()).append("\n");
+                xpCalculator.calculateXp(session, ActivityCategory.READING, multiplier);
+                int gainedReadingXp = xpCalculator.getCalculatedXp();
+                session.setXp(ActivityCategory.READING, gainedReadingXp);
+                stringBuilder.append(xpCalculator.getMessage()).append("\n");
+
+                int gainedXp = 0;
+
+                gainedXp += gainedGrindingXp;
+                gainedXp += gainedListeningXp;
+                gainedXp += gainedSpeakingXp;
+                gainedXp += gainedWritingXp;
+                gainedXp += gainedReadingXp;
+
+                grindingXp += gainedGrindingXp;
+                listeningXp += gainedListeningXp;
+                speakingXp += gainedSpeakingXp;
+                writingXp += gainedWritingXp;
+                readingXp += gainedReadingXp;
+
+                stringBuilder.append("\nGained Xp: ").append(gainedXp);
+                session.setXp(gainedXp);
+
+
+                stringBuilder.append("\nTotal grinding XP: ").append(this.grindingXp);
+                stringBuilder.append("\nTotal listening XP: ").append(this.listeningXp);
+                stringBuilder.append("\nTotal speaking XP: ").append(this.speakingXp);
+                stringBuilder.append("\nTotal writing XP: ").append(this.writingXp);
+                stringBuilder.append("\nTotal reading XP: ").append(this.readingXp);
+                stringBuilder.append("\n\nTotal XP: ").append(this.getXp());
+                System.out.println("After editing" + this.getSessionsByDate(newDate).size());
+                return stringBuilder.toString();
+            }
+        } else {
+            return "No session to edit";
+        }
+    }
+
     public void editSession(LocalDate date, int sessionID, LocalDate date2) {
         List<Session> sessionsOnDate = sessionsByDate.get(date);
         if (!sessionsOnDate.isEmpty()) {
@@ -536,6 +625,14 @@ public class SessionManager {
         }
     }
 
+
+    public void deleteSession(Session session) {
+        List<Session> sessions =
+                sessionsByDate.get(session.getDate());
+
+        sessions.remove(session);
+    }
+
     public String getSessionsOfDayToString(LocalDate date) {
         if (sessionsByDate.containsKey(date)) {
             StringBuilder output = new StringBuilder();
@@ -564,6 +661,12 @@ public class SessionManager {
 
     public void setToday(LocalDate date) {
         today = date;
+    }
+
+    public void makeDayNotNull(LocalDate date) {
+        if(!sessionsByDate.containsKey(date)) {
+            sessionsByDate.put(date, new ArrayList<>());
+        }
     }
 
 }
