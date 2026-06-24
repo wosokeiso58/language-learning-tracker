@@ -42,11 +42,11 @@ public class SessionManager {
         startWritingMinutes = writingHours * 60;
         startReadingMinutes = readingHours * 60;
 
-        grindingXp = grindingHours * 60 * 165;
-        readingXp = readingHours * 60 * 165;
-        speakingXp = speakingHours * 60 * 165;
-        listeningXp = listeningHours * 60 * 165;
-        writingXp = writingHours * 60 * 165;
+        grindingXp = grindingHours * 60 * 150;
+        readingXp = readingHours * 60 * 150;
+        speakingXp = speakingHours * 60 * 150;
+        listeningXp = listeningHours * 60 * 150;
+        writingXp = writingHours * 60 * 150;
 
         System.out.println("Estimated grinding level: " + getLevel(ActivityCategory.GRINDING));
         System.out.println("Estimated speaking level: " + getLevel(ActivityCategory.SPEAKING));
@@ -234,22 +234,22 @@ public class SessionManager {
                 variety = 1.15;
             } else if (balanceCount == 15) {
                 message = "You have a solid balance of activities in the last 14 days. You should be doing more listening. Balance XP multiplier: x1.00";
-                variety = 0.85;
+                variety = 1;
             } else if (balanceCount == 11) {
                 message = "You have a solid balance of activities in the last 14 days. You should be doing more speaking. Balance XP multiplier: x1.00";
-                variety = 0.85;
+                variety = 1;
             } else if (balanceCount == 6) {
                 message = "You have a solid balance of activities in the last 14 days. You should be doing more grinding. Balance XP multiplier: x1.00";
-                variety = 0.85;
+                variety = 1;
             } else if (balanceCount == 5) {
                 message = "You have a weak balance of activities in the last 14 days. You should be doing more grinding and listening. Balance XP multiplier: x0.75";
-                variety = 0.65;
+                variety = 0.875;
             } else if (balanceCount == 10) {
                 message = "You have a weak balance of activities in the last 14 days. You should be doing more speaking and listening. Balance XP multiplier: x0.75";
-                variety = 0.65;
+                variety = 0.875;
             } else if (balanceCount == 1) {
                 message = "You have a weak balance of activities in the last 14 days. You should be doing more speaking and grinding. Balance XP multiplier: x0.75";
-                variety = 0.65;
+                variety = 0.875;
             } else {
                 message = "error";
                 variety = 1;
@@ -381,19 +381,40 @@ public class SessionManager {
 
     }
 
+
+    public int getCeiling(){
+        return language.getXpCeiling(getNextLevel());
+
+    }
+    public double getCeiling(ActivityCategory activityCategory) {
+        return switch(activityCategory){
+            case WRITING -> getCeiling() * 0.12;
+            default -> getCeiling() * 0.22;
+        };
+    }
+
+    public double getXpProgress(ActivityCategory activityCategory) {
+        int xp = getXp();
+        double percentage = ((double) xp / getCeiling(activityCategory)) * 100;
+        return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
+    }
+
+    public double getTotalProgress() {
+        int xp = getXp();
+        double percentage = ((double) xp / getCeiling()) * 100;
+        double roundedPercentage = Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
+        if(roundedPercentage<0){
+            return 0;
+        }
+        else{
+            return roundedPercentage;
+        }
+
+    }
+
     public void displayLevelProgress(ActivityCategory activityCategory) {
 
-        Level level = getLevel();
-
-        switch (level) {
-            case BEGINNER -> level = Level.A1;
-            case A1 -> level = Level.A2;
-            case A2 -> level = Level.B1;
-            case B1 -> level = Level.B2;
-            case B2 -> level = Level.FLUENCY;
-            case FLUENCY -> level = Level.C1;
-            case C1 -> level = Level.C2;
-        }
+        Level level = getNextLevel();
 
         double ceiling = language.getXpCeiling(level);
 
@@ -418,6 +439,19 @@ public class SessionManager {
 
         }
 
+    }
+
+    public Level getNextLevel() {
+        Level level = getLevel();
+        return switch (level) {
+            case BEGINNER -> Level.A1;
+            case A1 -> Level.A2;
+            case A2 -> Level.B1;
+            case B1 -> Level.B2;
+            case B2 -> Level.FLUENCY;
+            case FLUENCY -> Level.C1;
+            case C1, C2 -> Level.C2;
+        };
     }
 
 
@@ -510,12 +544,6 @@ public class SessionManager {
         }
     }
 
-    public void removeSession(LocalDate date, int sessionID) {
-        List<Session> sessionsOnDate = sessionsByDate.get(date);
-        sessionsOnDate.removeIf(
-                session -> session.getSessionID() == sessionID
-        );
-    }
 
     public String editSession(LocalDate date, Session session, LocalDate newDate, ActivityType activityType, int minutes) {
         System.out.println("Before editing" + this.getSessionsByDate(newDate).size());
@@ -532,12 +560,9 @@ public class SessionManager {
                 return (logSession(minutes, activityType, newDate));
             } else {
 
-                grindingXp -= (int) (multiplier * session.getXp(ActivityCategory.GRINDING));
-                readingXp -= (int) (multiplier * session.getXp(ActivityCategory.READING));
-                speakingXp -= (int) (multiplier * session.getXp(ActivityCategory.SPEAKING));
-                writingXp -= (int) (multiplier * session.getXp(ActivityCategory.WRITING));
-                listeningXp -= (int) (multiplier * session.getXp(ActivityCategory.LISTENING));
-                XpCalculator xpCalculator = new XpCalculator();
+                deleteXp(session, multiplier);
+                XpCalculator xpCalculator;
+                xpCalculator = new XpCalculator();
 
                 xpCalculator.calculateXp(session, ActivityCategory.GRINDING, multiplier);
                 int gainedGrindingXp = xpCalculator.getCalculatedXp();
@@ -592,45 +617,32 @@ public class SessionManager {
         }
     }
 
-    public void editSession(LocalDate date, int sessionID, LocalDate date2) {
-        List<Session> sessionsOnDate = sessionsByDate.get(date);
-        if (!sessionsOnDate.isEmpty()) {
-            for (Session session : sessionsOnDate) {
-                if (session.getSessionID() == sessionID) {
-                    session.setDate(date2);
-                }
-            }
-        }
-    }
-
-    public void editSession(LocalDate date, int sessionID, ActivityType activityType) {
-        List<Session> sessionsOnDate = sessionsByDate.get(date);
-        if (!sessionsOnDate.isEmpty()) {
-            for (Session session : sessionsOnDate) {
-                if (session.getSessionID() == sessionID) {
-                    session.setActivityType(activityType);
-                }
-            }
-        }
-    }
-
-    public void editSession(LocalDate date, int sessionID, int minutes) {
-        List<Session> sessionsOnDate = sessionsByDate.get(date);
-        if (!sessionsOnDate.isEmpty()) {
-            for (Session session : sessionsOnDate) {
-                if (session.getSessionID() == sessionID) {
-                    session.setMinutes(minutes);
-                }
-            }
-        }
-    }
-
 
     public void deleteSession(Session session) {
+
+        double multiplier = session.getVariety();
+
+        deleteXp(session, multiplier);
         List<Session> sessions =
                 sessionsByDate.get(session.getDate());
 
         sessions.remove(session);
+    }
+
+    private void deleteXp(Session session, double multiplier) {
+        grindingXp -= (int) (multiplier * session.getXp(ActivityCategory.GRINDING));
+        readingXp -= (int) (multiplier * session.getXp(ActivityCategory.READING));
+        speakingXp -= (int) (multiplier * session.getXp(ActivityCategory.SPEAKING));
+        writingXp -= (int) (multiplier * session.getXp(ActivityCategory.WRITING));
+        listeningXp -= (int) (multiplier * session.getXp(ActivityCategory.LISTENING));
+        if (session.getXp()<0){
+            grindingXp = 0;
+            readingXp = 0;
+            listeningXp = 0;
+            speakingXp = 0;
+            writingXp = 0;
+        }
+
     }
 
     public String getSessionsOfDayToString(LocalDate date) {
@@ -664,7 +676,7 @@ public class SessionManager {
     }
 
     public void makeDayNotNull(LocalDate date) {
-        if(!sessionsByDate.containsKey(date)) {
+        if (!sessionsByDate.containsKey(date)) {
             sessionsByDate.put(date, new ArrayList<>());
         }
     }

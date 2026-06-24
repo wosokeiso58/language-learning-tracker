@@ -69,6 +69,8 @@ public class DashFX extends Application {
         HBox calendarLayout = new HBox(calendar, sessionLayout);
         calendarTab.setContent(calendarLayout);
 
+
+
         Label activityTypeLabel = new Label("Activity Type:");
         ComboBox<ActivityType> activityBox = new ComboBox<>();
         activityBox.setPromptText("Select an activity");
@@ -205,6 +207,28 @@ public class DashFX extends Application {
         };
 
 
+
+        progressTab.setOnSelectionChanged(event -> {
+            Label xpLabel = new Label("Overall XP to " + sessionManager.getNextLevel().toString() + ": " + sessionManager.getXp() + "/" + sessionManager.getCeiling());
+            Label totalProgressLabel = new Label("Progress to " + sessionManager.getNextLevel() + ": "+ sessionManager.getTotalProgress() + "%");
+            Label levelLabel = new Label(sessionManager.getLevel().toString());
+            ProgressBar totalProgress = new ProgressBar();
+            totalProgress.setProgress(sessionManager.getTotalProgress()/100);
+            Label nextLevelLabel = new Label(sessionManager.getNextLevel().toString());
+            Label totalMinutesLabel = new Label("Total minutes: " + sessionManager.getTotalMinutes());
+            Button toggleBars = new Button("Toggle category progress");
+
+
+            HBox progressBarBox =  new HBox(levelLabel, totalProgress, nextLevelLabel);
+            VBox progressBox = new VBox(xpLabel, totalProgressLabel, progressBarBox,  totalMinutesLabel);
+            progressTab.setContent(progressBox);
+            System.out.println(sessionManager.getLevel());
+            sessionManager.displayGeneralProgress(sessionManager.getLevel());
+
+            //TODO fix the bar and display the XP and like 100 other things
+        });
+
+
         d.setOnAction(setCalendar);
         logMenuButton.setOnAction(setLogger);
         editButton.setOnAction(setEditor);
@@ -224,7 +248,7 @@ public class DashFX extends Application {
     public VBox createSessionDisplay() {
         sessionDisplay = new VBox();
         try {
-            if (!sessionManager.getSessionsByDate(pickedDate).isEmpty()) {
+            if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()) {
                 List<Session> daySessions = sessionManager.getSessionsByDate(pickedDate);
                 int count = 0;
                 for (Session session : daySessions) {
@@ -257,7 +281,6 @@ public class DashFX extends Application {
                 }
             }
             else{
-                System.out.println("No sessions found!");
                 selectedSession = null;
                 selectedLabel = null;
             }
