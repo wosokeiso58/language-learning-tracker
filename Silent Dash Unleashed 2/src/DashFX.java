@@ -1,5 +1,9 @@
 import java.util.*;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.PieChart.Data;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,9 +19,7 @@ import java.util.Objects;
 
 public class DashFX extends Application {
 
-    private static final String PURPLE = "#9B59B6";
     private Label selectedLabel;
-    private VBox selectedCard;
     private Session selectedSession;
     private SessionManager sessionManager;
     private LocalDate pickedDate = LocalDate.now();
@@ -25,10 +27,6 @@ public class DashFX extends Application {
     private VBox sessionDisplay = createSessionDisplay();
     private Boolean isEditing = false;
     VBox sessionLayout = new VBox();
-
-    static void main(String[] args) {
-        launch();
-    }
 
     @Override
     public void start(Stage stage) {
@@ -49,8 +47,6 @@ public class DashFX extends Application {
         DatePicker d = new DatePicker();
         d.setShowWeekNumbers(true);
 
-        TextArea sessionOutput = new TextArea();
-        sessionOutput.setText(sessionManager.getSessionsOfDayToString(pickedDate));
         Label newDateLabel = new Label("New Date: " + pickedDate);
 
 
@@ -60,7 +56,6 @@ public class DashFX extends Application {
 
         Label sessionsLabel = new Label("Sessions:");
 
-        sessionOutput.setEditable(false);
 
         Button logMenuButton = new Button("Log session");
         Button editButton = new Button("Edit session");
@@ -89,7 +84,6 @@ public class DashFX extends Application {
 
             l.setText("Date : " + pickedDate);
 
-            sessionOutput.setText(sessionManager.getSessionsOfDayToString(pickedDate));
             logDateLabel.setText("Logging session for " + pickedDate);
             newDateLabel.setText("New Date: " + pickedDate);
 
@@ -124,8 +118,6 @@ public class DashFX extends Application {
 
             HBox hBox3 = new HBox(calendar, sessionLayout);
             calendarTab.setContent(hBox3);
-            sessionOutput.setText(sessionManager.getSessionsOfDayToString(pickedDate));
-
         };
 
 
@@ -135,10 +127,28 @@ public class DashFX extends Application {
                     logOutput.setText("No date selected!\nSelect a date!");
                 } else {
                     if (!(Objects.equals(minutesInput.getText(), "") || (activityBox.getSelectionModel().getSelectedItem() == null))) {
+                        StringBuilder stringBuilder = new StringBuilder();
                         int minutes = Integer.parseInt(minutesInput.getText());
                         ActivityType activityType = activityBox.getSelectionModel().getSelectedItem();
-                        logOutput.setText(sessionManager.logSession(minutes, activityType, pickedDate));
-
+                        int xp = sessionManager.logSession(minutes, activityType, pickedDate);
+                        double variety = sessionManager.getVariety();
+                        if(variety == 1.15){
+                            stringBuilder.append("You have a healthy balance of activities in the last 14 days. Well done! Balance XP multiplier: x1.25\n");
+                        }
+                        else if(variety == 1){
+                            stringBuilder.append("You have a solid balance of activities in the last 14 days. Balance XP multiplier: x1.00\n");
+                        }
+                        else if(variety == 0.875){
+                            stringBuilder.append("You have a weak balance of activities in the last 14 days. Balance XP multiplier: x0.875\n");
+                        }
+                        else{
+                            stringBuilder.append("Error\n");
+                        }
+                        for(ActivityCategory activityCategory : ActivityCategory.values()){
+                            stringBuilder.append(activityCategory.toString()).append(" XP gained: ").append(sessionManager.getXpJustCalculated(activityCategory)).append("\n");
+                        }
+                        stringBuilder.append("Total gained XP: ").append(xp);
+                        logOutput.setText(stringBuilder.toString());
                     } else {
                         StringBuilder stringBuilder = new StringBuilder();
 
@@ -180,7 +190,7 @@ public class DashFX extends Application {
                     if (!(Objects.equals(minutesInput.getText(), "") || (activityBox.getSelectionModel().getSelectedItem() == null))) {
                         int minutes = Integer.parseInt(minutesInput.getText());
                         ActivityType activityType = activityBox.getSelectionModel().getSelectedItem();
-                        logOutput.setText(sessionManager.editSession(selectedSession.getDate(),selectedSession, pickedDate,activityType,minutes));
+                        sessionManager.editSession(selectedSession, pickedDate,activityType,minutes);
 
                     } else {
                         StringBuilder stringBuilder = new StringBuilder();
@@ -209,23 +219,85 @@ public class DashFX extends Application {
 
 
         progressTab.setOnSelectionChanged(event -> {
-            Label xpLabel = new Label("Overall XP to " + sessionManager.getNextLevel().toString() + ": " + sessionManager.getXp() + "/" + sessionManager.getCeiling());
-            Label totalProgressLabel = new Label("Progress to " + sessionManager.getNextLevel() + ": "+ sessionManager.getTotalProgress() + "%");
+            Label xpLabel = new Label("Overall XP to " + sessionManager.getNextLevel(sessionManager.getLevel()).toString() + ": " + sessionManager.getXp() + "/" + sessionManager.getCeiling());
+            Label totalProgressLabel = new Label("Progress to " + sessionManager.getNextLevel(sessionManager.getLevel()) + ": "+ sessionManager.getTotalProgress() + "%");
             Label levelLabel = new Label(sessionManager.getLevel().toString());
             ProgressBar totalProgress = new ProgressBar();
             totalProgress.setProgress(sessionManager.getTotalProgress()/100);
-            Label nextLevelLabel = new Label(sessionManager.getNextLevel().toString());
-            Label totalMinutesLabel = new Label("Total minutes: " + sessionManager.getTotalMinutes());
-            Button toggleBars = new Button("Toggle category progress");
+            Label nextLevelLabel = new Label(sessionManager.getNextLevel(sessionManager.getLevel()).toString());
+            Label totalMinutesLabel = new Label("Total minutes: " + minutesToHours(sessionManager.getTotalMinutes()));
+            Label weekMinutesLabel = new Label("Week Minutes: " + minutesToHours(sessionManager.getWeekMinutes()));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            List<Map.Entry<ActivityType, Integer>> sorted = sessionManager.threeFavouriteActivities();
+            stringBuilder.append("Top 3 activities:\n");
+            for (int i = 0; i < Math.min(3, sorted.size()); i++) {
+                stringBuilder.append(sorted.get(i).getKey()).append(" : ").append(sorted.get(i).getValue()).append("\n");
+            }
+            Label topThreeActivities = new Label(stringBuilder.toString());
+
+            Button toggleBars = new Button("Toggle activity progress");
+            Label retentionLabel = new Label("Retention score: " + sessionManager.getRetention());
+            Label consistencyLabel = new Label("Consistency bonus: " + sessionManager.getConsistencyBonus());
+            Label varietyLabel = new Label("Current variety score over last 14 days: " + sessionManager.getVariety());
+
+            HBox categoryProgress = new HBox();
+
+            for(ActivityCategory activityCategory : ActivityCategory.values()) {
+                Label categoryXpLabel = new Label(activityCategory.toString().substring(0, 1).toUpperCase() + activityCategory.toString().substring(1) + " XP to " + sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)).toString() + ": " + sessionManager.getXp(activityCategory) + "/" + sessionManager.getCeiling(activityCategory));
+                Label categoryProgressLabel = new Label("Progress to " + sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)) + ": "+ sessionManager.getXpProgress(activityCategory) + "%");
+                Label categorylevelLabel = new Label(sessionManager.getLevel(activityCategory).toString());
+                ProgressBar categoryProgressBar = new ProgressBar();
+                categoryProgressBar.setProgress(sessionManager.getXpProgress(activityCategory)/100);
+                Label categoryNextLevelLabel = new Label(sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)).toString());
+                HBox categoryProgressBarBox =  new HBox(categorylevelLabel, categoryProgressBar, categoryNextLevelLabel);
+                VBox categoryProgressBox = new VBox(categoryXpLabel, categoryProgressLabel, categoryProgressBarBox);
+
+                categoryProgress.getChildren().add(categoryProgressBox);
+            }
+
+//            EventHandler<ActionEvent> toggleActivityProgress = e -> {
+//
+//            };
+
+            ObservableList<Data> xpChartData = FXCollections.observableArrayList(
+                    new PieChart.Data("Reading XP", sessionManager.getXp(ActivityCategory.READING)),
+                    new PieChart.Data("Writing XP", sessionManager.getXp(ActivityCategory.WRITING)),
+                    new PieChart.Data("Grinding XP", sessionManager.getXp(ActivityCategory.GRINDING)),
+                    new PieChart.Data("Speaking XP", sessionManager.getXp(ActivityCategory.SPEAKING)),
+                    new PieChart.Data("Listening Xp", sessionManager.getXp(ActivityCategory.LISTENING))
+            );
+
+            PieChart xpPieChart = new PieChart(xpChartData);
+            xpPieChart.setTitle("Study XP by Activity category");
+            xpPieChart.setLegendVisible(false);
+            xpPieChart.setLabelsVisible(true);
+
+            ObservableList<Data> minutesChartData = FXCollections.observableArrayList();
+            for(ActivityType activityType : ActivityType.values()) {
+                minutesChartData.add(new PieChart.Data(activityType.toString()+" ("+minutesToHours(sessionManager.getTotalMinutes(activityType))+")",sessionManager.getTotalMinutes(activityType)));
+            }
+            PieChart minutesPieChart = new PieChart(minutesChartData);
+            minutesPieChart.setTitle("Study Minutes by Activity type");
+            minutesPieChart.setLegendVisible(false);
+            minutesPieChart.setLabelsVisible(true);
+
+
+
 
 
             HBox progressBarBox =  new HBox(levelLabel, totalProgress, nextLevelLabel);
-            VBox progressBox = new VBox(xpLabel, totalProgressLabel, progressBarBox,  totalMinutesLabel);
-            progressTab.setContent(progressBox);
+            VBox progressBox = new VBox(xpLabel, totalProgressLabel, progressBarBox);
+            HBox pieChartBox = new HBox(xpPieChart,minutesPieChart);
+            VBox daddyBox = new VBox(totalMinutesLabel, weekMinutesLabel,varietyLabel, consistencyLabel, retentionLabel, progressBox, categoryProgress);
+
+            if(sessionManager.getXp()>0){
+                daddyBox.getChildren().add(pieChartBox);
+            }
+            progressTab.setContent(daddyBox);
             System.out.println(sessionManager.getLevel());
             sessionManager.displayGeneralProgress(sessionManager.getLevel());
 
-            //TODO fix the bar and display the XP and like 100 other things
         });
 
 
@@ -301,6 +373,16 @@ public class DashFX extends Application {
             count++;
         }
         return count+1;
+    }
+
+    public String minutesToHours(int num) {
+        int hours = num / 60;
+        int minutes = num % 60;
+        if (hours<1){
+            return minutes  + "m";
+
+        }
+        return hours + "h " + minutes + "m";
     }
 
 

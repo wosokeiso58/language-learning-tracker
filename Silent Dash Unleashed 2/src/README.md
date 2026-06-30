@@ -21,6 +21,8 @@ A chart should take the current progressed logged and formulate a visual indicat
 
 get statistics for individual activity types
 
+history graph(s)  for xp
+
 icon in the top right with current XP, level etc
 
 have to select a language to begin with and hold multiple session managers and stuff eventually

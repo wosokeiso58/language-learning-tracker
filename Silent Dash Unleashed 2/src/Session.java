@@ -2,28 +2,20 @@ import java.time.LocalDate;
 
 public class Session {
 
-    private final int sessionID;
 
-    private int minutes;
-
-    private ActivityType activityType;
-    private double variety;
-    private int Xp = 0;
-    private int readingXP = 0;
-    private int listeningXP = 0;
-    private int speakingXP = 0;
-    private int writingXP = 0;
-    private int grindingXP = 0;
+    private final int minutes;
+    private final int xp;
+    private final ActivityType activityType;
+    private final double variety;
 
     public LocalDate date;
-    //TODO add a gainedXP for each category and add a variety and stuff
-    //TODO so we can use that to edit a session properly.
 
-    public Session(int sessionID, int minutes, ActivityType activityType, LocalDate date) {
-        this.sessionID = sessionID;
+    public Session(int minutes, ActivityType activityType, LocalDate date, int xp, double variety) {
         this.minutes = minutes;
         this.activityType = activityType;
         this.date = date;
+        this.xp = xp;
+        this.variety = variety;
     }
 
     public int getMinutes() {
@@ -33,54 +25,14 @@ public class Session {
         return activityType;
     }
 
-    public int getSessionID() {
-        return sessionID;
-    }
-
     public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-    public void setMinutes(int minutes) {
-        this.minutes = minutes;
-    }
-
-    public void setActivityType(ActivityType activityType) {
-        this.activityType = activityType;
-    }
     public int getXp() {
-        return Xp;
-    }
-    public int getXp(ActivityCategory activityCategory) {
-        return switch(activityCategory){
-            case SPEAKING -> speakingXP;
-            case GRINDING -> grindingXP;
-            case WRITING -> writingXP;
-            case READING ->  readingXP;
-            case LISTENING ->  listeningXP;
-        };
+        return xp;
     }
 
-    public void setXp(ActivityCategory activityCategory, int xp) {
-        switch(activityCategory){
-            case SPEAKING -> speakingXP = xp;
-            case GRINDING -> grindingXP = xp;
-            case WRITING -> writingXP = xp;
-            case READING -> readingXP = xp;
-            case LISTENING -> listeningXP = xp;
-        }
-
-    }
-
-    public void setXp(int Xp) {
-        this.Xp = Xp;
-    }
-    public void setVariety(Double variety){
-        this.variety = variety;
-    }
     public double getVariety() {
         return variety;
     }
