@@ -1,0 +1,20 @@
+{
+  "sessions" : [ {
+    "minutes" : 34,
+    "activityType" : "ANKI",
+    "date" : "2026-06-01"
+  }, {
+    "minutes" : 64,
+    "activityType" : "COMPREHENSIBLE_INPUT_WITHOUT_SUBS",
+    "date" : "2026-06-01"
+  } ],
+  "language" : "MANDARIN",
+  "activeStreak" : 0,
+  "inactiveStreak" : 30,
+  "lastStreakUpdate" : "2026-07-02",
+  "startReadingHours" : 150,
+  "startGrindingHours" : 150,
+  "startSpeakingHours" : 150,
+  "startListeningHours" : 150,
+  "startWritingHours" : 150
+}

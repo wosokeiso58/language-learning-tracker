@@ -1,17 +1,23 @@
+package org.example;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.*;
 
 public class SessionManager {
 
-    private final Language language;
+
     private final Map<LocalDate, List<Session>> sessionsByDate;
+
+    private final Language language;
 
     private int activeStreak;
     private int inactiveStreak;
     private LocalDate lastStreakUpdate;
 
-    private static final double BASE_RETENTION = 1000.0;
-    private static final double INACTIVITY_WEIGHT = 50.0;
+    private static double BASE_RETENTION;
+    private static double INACTIVITY_WEIGHT;
 
     private int readingXp;
     private int grindingXp;
@@ -33,33 +39,29 @@ public class SessionManager {
 
     LocalDate today = LocalDate.now();
 
-    public SessionManager(Language language, int grindingHours, int speakingHours, int readingHours, int listeningHours, int writingHours) {
+    public SessionManager(Language language, int activeStreak, int inactiveStreak, LocalDate lastStreakUpdate, int grindingHours, int speakingHours, int readingHours, int listeningHours, int writingHours) {
         this.language = language;
         sessionsByDate = new HashMap<>();
+
+        this.activeStreak = activeStreak;
+        this.inactiveStreak = inactiveStreak;
+        this.lastStreakUpdate = lastStreakUpdate;
+
         startGrindingMinutes = grindingHours * 60;
-
-        activeStreak = 0;
-        inactiveStreak = 0;
-        lastStreakUpdate = LocalDate.of(2026, 6, 1);
-
         startListeningMinutes = listeningHours * 60;
         startSpeakingMinutes = speakingHours * 60;
         startWritingMinutes = writingHours * 60;
         startReadingMinutes = readingHours * 60;
+
+        BASE_RETENTION = 1000.0;
+        INACTIVITY_WEIGHT = 50.0;
+
 
         grindingXp = grindingHours * 60 * 150;
         readingXp = readingHours * 60 * 150;
         speakingXp = speakingHours * 60 * 150;
         listeningXp = listeningHours * 60 * 150;
         writingXp = writingHours * 60 * 150;
-
-        System.out.println("Estimated grinding level: " + getLevel(ActivityCategory.GRINDING));
-        System.out.println("Estimated speaking level: " + getLevel(ActivityCategory.SPEAKING));
-        System.out.println("Estimated reading level: " + getLevel(ActivityCategory.READING));
-        System.out.println("Estimated writing level: " + getLevel(ActivityCategory.WRITING));
-        System.out.println("Estimated listening level: " + getLevel(ActivityCategory.LISTENING));
-
-        System.out.println("Estimated Overall level: " + getLevel());
     }
 
     public int logSession(int minutes, ActivityType activityType, LocalDate date) {
@@ -68,6 +70,11 @@ public class SessionManager {
             dailyUpdate();
         }
         return xp;
+    }
+
+    public int loadSession(int minutes, ActivityType activityType, LocalDate date) {
+        return addSession(allocateXp(minutes, activityType, date));
+
     }
 
     public int addSession(Session session) {
@@ -346,7 +353,7 @@ public class SessionManager {
     public int getXp() {
         return readingXp + speakingXp + writingXp + listeningXp + grindingXp;
     }
-
+    @JsonIgnore
     public int getXp(ActivityCategory activityCategory) {
         return switch (activityCategory) {
             case LISTENING -> listeningXp;
@@ -523,4 +530,40 @@ public class SessionManager {
         }
     }
 
-}
+    public Language getLanguage() {
+        return language;
+    }
+
+    public LocalDate getLastStreakUpdate() {
+        return lastStreakUpdate;
+    }
+
+    public int getStartReadingHours() {
+        return startReadingMinutes/60;
+    }
+
+    public int getStartWritingHours() {
+        return startWritingMinutes/60;
+    }
+
+    public int getStartGrindingHours() {
+        return startGrindingMinutes/60;
+    }
+
+    public int getStartListeningHours() {
+        return startListeningMinutes/60;
+    }
+
+    public int getStartSpeakingHours() {
+        return startSpeakingMinutes/60;
+    }
+
+    public List<Session> getSessions() {
+        List<Session> sessions = new ArrayList<>();
+        for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
+            sessions.addAll(entry.getValue());
+        }
+        return sessions;
+    }
+
+    }

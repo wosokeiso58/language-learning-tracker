@@ -1,15 +1,21 @@
+package org.example;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Session {
 
 
     private final int minutes;
-    private final int xp;
     private final ActivityType activityType;
+    private final int xp;
 
     public LocalDate date;
 
-    public Session(int minutes, ActivityType activityType, LocalDate date, int xp) {
+    public Session(@JsonProperty("minutes")int minutes,
+                   @JsonProperty("activityType")ActivityType activityType,
+                   @JsonProperty("date")LocalDate date,
+                   @JsonProperty("xp")int xp) {
         this.minutes = minutes;
         this.activityType = activityType;
         this.date = date;
@@ -27,6 +33,7 @@ public class Session {
         return date;
     }
 
+    @JsonIgnore
     public int getXp() {
         return xp;
     }

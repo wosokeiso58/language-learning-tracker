@@ -23,7 +23,6 @@ public class DashFX extends Application {
     private Session selectedSession;
     private SessionManager sessionManager;
     private LocalDate pickedDate = LocalDate.now();
-    private Label logDateLabel = new Label();
     private VBox sessionDisplay = createSessionDisplay();
     private Boolean isEditing = false;
     VBox sessionLayout = new VBox();
@@ -40,7 +39,7 @@ public class DashFX extends Application {
 
         tabPane.getTabs().addAll(calendarTab, progressTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-
+        Label logDateLabel = new Label();
 
         Label l = new Label("no date selected");
 
@@ -145,7 +144,7 @@ public class DashFX extends Application {
                             stringBuilder.append("Error\n");
                         }
                         for(ActivityCategory activityCategory : ActivityCategory.values()){
-                            stringBuilder.append(activityCategory.toString()).append(" XP gained: ").append(sessionManager.getXpJustCalculated(activityCategory)).append("\n");
+                            stringBuilder.append(activityCategory.toString().substring(0, 1).toUpperCase() + activityCategory.toString().substring(1)).append(" XP gained: ").append(sessionManager.getXpJustCalculated(activityCategory)).append("\n");
                         }
                         stringBuilder.append("Total gained XP: ").append(xp);
                         logOutput.setText(stringBuilder.toString());
@@ -173,9 +172,8 @@ public class DashFX extends Application {
                 minutesInput.setText(String.valueOf(selectedSession.getMinutes()));
                 logOutput.setText("");
                 Label editDateLabel = new Label("Editing session "+ calculateSessionNumberOfDay() + " on " + selectedSession.getDate());
-                Label multiplierLabel = new Label("Variety multiplier: " +selectedSession.getVariety());
                 HBox editorButtons = new HBox(saveButton,closeButton);
-                VBox editorLayout = new VBox(editDateLabel,newDateLabel, multiplierLabel, activityTypeLabel, activityBox, minutesLabel, minutesInput, logOutput, editorButtons);
+                VBox editorLayout = new VBox(editDateLabel,newDateLabel, activityTypeLabel, activityBox, minutesLabel, minutesInput, logOutput, editorButtons);
                 HBox hBox3 = new HBox(calendar, editorLayout);
                 calendarTab.setContent(hBox3);
             }
