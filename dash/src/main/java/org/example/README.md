@@ -23,9 +23,6 @@ get statistics for individual activity types
 
 history graph(s)  for xp
 
-icon in the top right with current XP, level etc
-
-have to select a language to begin with and hold multiple session managers and stuff eventually
 
 
 - ###
@@ -44,23 +41,8 @@ D:content with subs 1
 
 E:content without subs script practice 0.75
 
-package org.example;
+write history stuff
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-static void main() throws IOException {
 
 }

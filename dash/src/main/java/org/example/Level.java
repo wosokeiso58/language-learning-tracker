@@ -10,17 +10,16 @@ public enum Level {
     C2,
     FLUENCY;
 
-//    @Override
-//    public String toString() {
-//        return switch (this) {
-//            case BEGINNER -> "beginner";
-//            case A1 -> "A1";
-//            case A2 -> "A2";
-//            case B1 -> "B1";
-//            case B2 -> "B2";
-//            case C1 -> "C1";
-//            case C2 -> "C2";
-//            case FLUENCY -> "fluency";
-//        };
-//    }
+    public String getSymbol() {
+        return switch (this) {
+            case BEGINNER -> "A0";
+            case A1 -> "A1";
+            case A2 -> "A2";
+            case B1 -> "B1";
+            case B2 -> "B2";
+            case FLUENCY -> "FLUENT";
+            case C1 -> "C1";
+            case C2 -> "C2";
+        };
+    }
 }

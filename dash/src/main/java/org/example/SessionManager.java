@@ -72,8 +72,8 @@ public class SessionManager {
         return xp;
     }
 
-    public int loadSession(int minutes, ActivityType activityType, LocalDate date) {
-        return addSession(allocateXp(minutes, activityType, date));
+    public void loadSession(int minutes, ActivityType activityType, LocalDate date) {
+        addSession(allocateXp(minutes, activityType, date));
 
     }
 
@@ -216,6 +216,7 @@ public class SessionManager {
         return totalMinutes;
     }
 
+
     public int getTotalMinutes(ActivityType activityType) {
         int totalMinutes = 0;
         for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
@@ -275,16 +276,21 @@ public class SessionManager {
     }
 
     public void updateStreak() {
+        System.out.println("updating streak");
 
         for (LocalDate date = lastStreakUpdate; date.isBefore(today); date = date.plusDays(1)) {
             if ((!sessionsByDate.containsKey(date) || (sessionsByDate.get(date).isEmpty()))) {
                 inactiveStreak++;
+                System.out.println("adding to inactive streak");
                 activeStreak = 0;
             } else {
+                System.out.println("adding to active streak");
                 inactiveStreak = 0;
                 activeStreak++;
             }
         }
+        System.out.println("inactive streak " + inactiveStreak);
+        System.out.println("active streak " + activeStreak);
     }
 
     public double getRetention() {
@@ -295,13 +301,14 @@ public class SessionManager {
 
     public double getConsistencyBonus() {
 
-        return 1 + (0.05 * Math.log(activeStreak + 1));
+        double percentage = 1 + (0.05 * Math.log(activeStreak + 1));
+        return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
     }
 
 
     public void displayGeneralProgress(Level level) {
         int ceiling = language.getXpCeiling(level);
-        int xp = getXp();
+        int xp = getXp()-getFloor();
         double percentage = ((double) xp / ceiling) * 100;
         double roundedPercentage = Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
 
@@ -316,22 +323,44 @@ public class SessionManager {
     }
 
     public int getCeiling(ActivityCategory activityCategory) {
+        return language.getXpCeiling(getNextLevel(getLevel(activityCategory)));
+    }
+
+
+    public int getCategoryCeiling(ActivityCategory activityCategory) {
         if (activityCategory == ActivityCategory.WRITING) {
-            return (int) (getCeiling() * 0.12);
+            return (int) (getCeiling(activityCategory) * 0.12);
         } else {
-            return (int) (getCeiling() * 0.22);
+            return (int) (getCeiling(activityCategory) * 0.22);
+        }
+    }
+
+    public int getFloor(){
+        return language.getXpCeiling(getLevel());
+    }
+
+    public int getFloor(ActivityCategory activityCategory){
+        return language.getXpCeiling(getLevel(activityCategory));
+    }
+
+    public int getCategoryFloor(ActivityCategory activityCategory){
+        if (activityCategory == ActivityCategory.WRITING) {
+            return (int) (getFloor(activityCategory) * 0.12);
+        }
+        else{
+            return (int) (getFloor(activityCategory) * 0.22);
         }
     }
 
     public double getXpProgress(ActivityCategory activityCategory) {
-        int xp = getXp(activityCategory);
-        double percentage = ((double) xp / getCeiling(activityCategory)) * 100;
+        int xp = getXp(activityCategory)-getCategoryFloor(activityCategory);
+        double percentage = ((double) xp / (getCategoryCeiling(activityCategory)-getCategoryFloor(activityCategory))) * 100;
         return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
     }
 
     public double getTotalProgress() {
-        int xp = getXp();
-        double percentage = ((double) xp / getCeiling()) * 100;
+        int xp = getXp()-getFloor();
+        double percentage = ((double) xp / (getCeiling()-getFloor())) * 100;
         return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
 
     }
@@ -442,18 +471,14 @@ public class SessionManager {
 
     public void editSession(Session session, LocalDate newDate, ActivityType activityType, int minutes) {
         System.out.println("Before editing" + this.getSessionsByDate(newDate).size());
-        if (session != null) {
-
+//        if(!((session.getDate().equals(newDate))&&(session.getActivityType().equals(activityType))&&(session.getMinutes() == minutes))) {
             deleteSession(session);
-
             addSession(allocateXp(minutes, activityType, newDate));
-        }
+//        }
     }
 
 
     public void deleteSession(Session session) {
-
-        System.out.println("xp before deletion: " + getXp());
 
         allocateXp(session.getMinutes(), session.getActivityType(), session.getDate());
 
@@ -479,34 +504,9 @@ public class SessionManager {
             listeningXp = 0;
         }
 
-        List<Session> sessions = sessionsByDate.get(session.getDate());
-
-        sessions.remove(session);
-
-        System.out.println("xp after deletion: " + getXp());
+        sessionsByDate.get(session.getDate()).remove(session);
     }
 
-
-    public List<Map.Entry<ActivityType, Integer>> threeFavouriteActivities() {
-        EnumMap<ActivityType, Integer> minutesByActivity = new EnumMap<>(ActivityType.class);
-        for (ActivityType activity : ActivityType.values()) {
-            minutesByActivity.put(activity, 0);
-        }
-        for (List<Session> sessions : sessionsByDate.values()) {
-
-            for (Session session : sessions) {
-
-                ActivityType activity = session.getActivityType();
-
-                minutesByActivity.put(activity, minutesByActivity.get(activity) + session.getMinutes());
-            }
-        }
-        List<Map.Entry<ActivityType, Integer>> sorted = new ArrayList<>(minutesByActivity.entrySet());
-        sorted.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
-
-        return sorted;
-
-    }
 
     public int getActiveStreak() {
         return activeStreak;

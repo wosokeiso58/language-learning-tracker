@@ -5,6 +5,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JsonStorage {
 
@@ -17,47 +19,50 @@ public class JsonStorage {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public static void save(SessionManager manager) throws IOException {
+    public static void save(List<SessionManager> managers) throws IOException {
+        List<SessionManagerData> data = new ArrayList<>();
 
-        SessionManagerData writingData =
-                new SessionManagerData(
-                        manager.getSessions(),
-                        manager.getLanguage(),
-                        manager.getActiveStreak(),
-                        manager.getInactiveStreak(),
-                        manager.getLastStreakUpdate(),
-                        manager.getStartReadingHours(),
-                        manager.getStartSpeakingHours(),
-                        manager.getStartGrindingHours(),
-                        manager.getStartListeningHours(),
-                        manager.getStartWritingHours()
+        for (SessionManager manager : managers) {
+            data.add(new SessionManagerData(
+                    manager.getSessions(),
+                    manager.getLanguage(),
+                    manager.getActiveStreak(),
+                    manager.getInactiveStreak(),
+                    manager.getLastStreakUpdate(),
+                    manager.getStartReadingHours(),
+                    manager.getStartSpeakingHours(),
+                    manager.getStartGrindingHours(),
+                    manager.getStartListeningHours(),
+                    manager.getStartWritingHours()
 
 
-            );
-
-        mapper.writeValue(file, writingData);
+            ));
+        }
+        mapper.writeValue(file, new AppData(data));
     }
 
-    public static SessionManager load() throws IOException {
+    public static List<SessionManager> load() throws IOException {
+        List<SessionManager> sessionManagers = new ArrayList<>();
 
-        SessionManagerData loadedData = mapper.readValue(file,SessionManagerData.class);
+        AppData appData = mapper.readValue(file, AppData.class);
 
-        SessionManager sessionManager = new SessionManager(loadedData.getLanguage(),
-                loadedData.getActiveStreak(),
-                loadedData.getInactiveStreak(),
-                loadedData.getLastStreakUpdate(),
-                loadedData.getStartGrindingHours(),
-                loadedData.getStartSpeakingHours(),
-                loadedData.getStartReadingHours(),
-                loadedData.getStartListeningHours(),
-                loadedData.getStartWritingHours());
+        for(SessionManagerData sessionManagerData : appData.sessionManagers()){
+            SessionManager sessionManager = new SessionManager(sessionManagerData.language(),
+                    sessionManagerData.activeStreak(),
+                    sessionManagerData.inactiveStreak(),
+                    sessionManagerData.lastStreakUpdate(),
+                    sessionManagerData.startGrindingHours(),
+                    sessionManagerData.startSpeakingHours(),
+                    sessionManagerData.startReadingHours(),
+                    sessionManagerData.startListeningHours(),
+                    sessionManagerData.startWritingHours());
 
-        for(Session session : loadedData.getSessions()){
-            sessionManager.loadSession(session.getMinutes(),session.getActivityType(),session.getDate());
+            for(Session session : sessionManagerData.sessions()){
+                sessionManager.loadSession(session.getMinutes(),session.getActivityType(),session.getDate());
+            }
+            sessionManagers.add(sessionManager);
         }
-
-        return sessionManager;
-
+        return sessionManagers;
 
     }
 
