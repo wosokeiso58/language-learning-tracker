@@ -1,0 +1,23 @@
+.new-manager-button{
+    -fx-background-color: #8da6c5;
+    -fx-text-fill: #fadaff;
+    -fx-background-radius:10;
+    -fx-padding:8 18 8 18;
+    -fx-font-weight:bold;
+}
+
+.new-manager-button:hover{
+    -fx-background-color: #788ea1;
+}
+
+/*TODO write a new manager idk thing for the input box, output box and the language box*/
+
+.new-manager-label{
+
+    -fx-text-fill: #fadaff;
+
+    -fx-font-size:20;
+
+    -fx-font-weight: bold;
+
+}

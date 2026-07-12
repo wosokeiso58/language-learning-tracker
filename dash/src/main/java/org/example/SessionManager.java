@@ -1,7 +1,5 @@
 package org.example;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -276,21 +274,15 @@ public class SessionManager {
     }
 
     public void updateStreak() {
-        System.out.println("updating streak");
-
         for (LocalDate date = lastStreakUpdate; date.isBefore(today); date = date.plusDays(1)) {
             if ((!sessionsByDate.containsKey(date) || (sessionsByDate.get(date).isEmpty()))) {
                 inactiveStreak++;
-                System.out.println("adding to inactive streak");
-                activeStreak = 0;
+                activeStreak = 1;
             } else {
-                System.out.println("adding to active streak");
-                inactiveStreak = 0;
+                inactiveStreak = 1;
                 activeStreak++;
             }
         }
-        System.out.println("inactive streak " + inactiveStreak);
-        System.out.println("active streak " + activeStreak);
     }
 
     public double getRetention() {
@@ -304,18 +296,6 @@ public class SessionManager {
         double percentage = 1 + (0.05 * Math.log(activeStreak + 1));
         return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
     }
-
-
-    public void displayGeneralProgress(Level level) {
-        int ceiling = language.getXpCeiling(level);
-        int xp = getXp()-getFloor();
-        double percentage = ((double) xp / ceiling) * 100;
-        double roundedPercentage = Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
-
-        System.out.println("Overall XP to " + level.toString() + ": " + xp + "/" + ceiling + "\nProgress: " + roundedPercentage + "%");
-
-    }
-
 
     public int getCeiling() {
         return language.getXpCeiling(getNextLevel(getLevel()));
@@ -361,7 +341,7 @@ public class SessionManager {
     public double getTotalProgress() {
         int xp = getXp()-getFloor();
         double percentage = ((double) xp / (getCeiling()-getFloor())) * 100;
-        return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
+        return Math.round(percentage * Math.pow(10, 2)) / Math.pow(10, 2);
 
     }
 
@@ -382,7 +362,7 @@ public class SessionManager {
     public int getXp() {
         return readingXp + speakingXp + writingXp + listeningXp + grindingXp;
     }
-    @JsonIgnore
+
     public int getXp(ActivityCategory activityCategory) {
         return switch (activityCategory) {
             case LISTENING -> listeningXp;
@@ -470,11 +450,8 @@ public class SessionManager {
 
 
     public void editSession(Session session, LocalDate newDate, ActivityType activityType, int minutes) {
-        System.out.println("Before editing" + this.getSessionsByDate(newDate).size());
-//        if(!((session.getDate().equals(newDate))&&(session.getActivityType().equals(activityType))&&(session.getMinutes() == minutes))) {
-            deleteSession(session);
-            addSession(allocateXp(minutes, activityType, newDate));
-//        }
+        deleteSession(session);
+        addSession(allocateXp(minutes, activityType, newDate));
     }
 
 

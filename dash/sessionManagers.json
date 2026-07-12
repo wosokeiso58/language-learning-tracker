@@ -1,26 +1,26 @@
 {
   "sessionManagers" : [ {
     "sessions" : [ {
-      "minutes" : 22,
-      "activityType" : "READ_TEXT",
-      "date" : "2026-07-13"
+      "minutes" : 0,
+      "activityType" : "WATCH_CONTENT_WITH_SUBS",
+      "date" : "2026-07-12"
     }, {
-      "minutes" : 23,
-      "activityType" : "SHADOWING",
-      "date" : "2026-07-11"
+      "minutes" : 6000,
+      "activityType" : "WATCH_CONTENT_WITHOUT_SUBS",
+      "date" : "2026-07-12"
     }, {
-      "minutes" : 444,
-      "activityType" : "HANDWRITE_TEXT",
-      "date" : "2026-07-07"
+      "minutes" : 66000,
+      "activityType" : "COMPREHENSIBLE_INPUT_WITHOUT_SUBS",
+      "date" : "2026-07-12"
     } ],
-    "language" : "ESPERANTO",
+    "language" : "SPANISH",
     "activeStreak" : 1,
-    "inactiveStreak" : 0,
-    "lastStreakUpdate" : "2026-07-08",
-    "startReadingHours" : 11,
-    "startGrindingHours" : 11,
-    "startSpeakingHours" : 11,
-    "startListeningHours" : 11,
-    "startWritingHours" : 11
+    "inactiveStreak" : 1,
+    "lastStreakUpdate" : "2026-07-12",
+    "startReadingHours" : 0,
+    "startGrindingHours" : 0,
+    "startSpeakingHours" : 0,
+    "startListeningHours" : 0,
+    "startWritingHours" : 0
   } ]
 }

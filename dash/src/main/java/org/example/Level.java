@@ -17,7 +17,7 @@ public enum Level {
             case A2 -> "A2";
             case B1 -> "B1";
             case B2 -> "B2";
-            case FLUENCY -> "FLUENT";
+            case FLUENCY -> "FL";
             case C1 -> "C1";
             case C2 -> "C2";
         };
