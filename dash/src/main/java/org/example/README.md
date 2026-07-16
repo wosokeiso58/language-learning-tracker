@@ -20,7 +20,7 @@ A chart should take the current progressed logged and formulate a visual indicat
 ## Future Ideas
 
 get statistics for individual activity types
-
+make it so you can customise the appearance and name of a session manager
 history graph(s)  for xp
 
 

@@ -96,6 +96,21 @@ public enum Language {
         return this.getMinutes(level)*180;
     }
 
+    @Override
+    public String toString() {
+        return switch (this){
+            case ESPERANTO -> "Esperanto";
+            case FRENCH -> "French";
+            case SPANISH -> "Spanish";
+            case GERMAN -> "German";
+            case RUSSIAN -> "Russian";
+            case VIETNAMESE -> "Vietnamese";
+            case MANDARIN -> "Mandarin";
+            case JAPANESE -> "Japanese";
+            case KOREAN -> "Korean";
+        };
+    }
+
 
 
 

@@ -12,6 +12,49 @@
 
 /*TODO write a new manager idk thing for the input box, output box and the language box*/
 
+.new-manager-box{
+    -fx-background-color: #8da6c5;
+    -fx-text-fill: #fadaff;
+    -fx-prompt-text-fill:#fadaff;
+    -fx-background-radius:10;
+    -fx-padding:8 18 8 18;
+    -fx-font-weight:bold;
+}
+.new-manager-box .list-cell{
+    -fx-text-fill:#fadaff;
+    -fx-background-color:#8da6c5;
+}
+
+.new-manager-box .list-cell{
+    -fx-text-fill:#fadaff;
+}
+
+.new-manager-box .list-cell:hover{
+    -fx-background-color:#6D5DF6;
+}
+
+.new-manager-bad-box{
+    -fx-background-color: #ff9c9c;
+    -fx-text-fill: #e33cff;
+    -fx-prompt-text-fill:#e33cff;
+    -fx-background-radius:10;
+    -fx-padding:8 18 8 18;
+    -fx-font-weight:bold;
+}
+
+.new-manager-bad-box .list-cell{
+    -fx-text-fill:#e33cff;
+    -fx-background-color:#ff9c9c;
+}
+
+.new-manager-bad-box .list-cell{
+    -fx-text-fill:#e33cff;
+}
+
+.new-manager-bad-box .list-cell:hover{
+    -fx-background-color: #a198f4;
+}
+
 .new-manager-label{
 
     -fx-text-fill: #fadaff;
@@ -20,4 +63,68 @@
 
     -fx-font-weight: bold;
 
+}
+
+.manager-card{
+
+    -fx-background-color: rgba(21,26,34,0.44);
+    -fx-background-radius: 8px;
+    -fx-text-fill: #ffffff;
+    -fx-cursor: hand;
+    -fx-border-color: grey;
+    -fx-border-radius: 3px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
+
+}
+
+.manager-card .label{
+    -fx-text-fill: grey;
+    -fx-font-size: 18px;
+}
+
+.manager-card:hover .label{
+    -fx-text-fill: #ffffff;
+}
+
+.manager-card:hover{
+    -fx-border-color: #ffffff;
+}
+
+
+
+.selected-manager-card{
+
+    -fx-background-color: rgba(21,26,34,0.44);
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #ffa6fc;
+    -fx-border-radius: 2px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
+}
+
+.selected-manager-card .label{
+    -fx-text-fill: #ffa6fc;
+    -fx-font-size: 18px;
+}
+
+.main-menu-button{
+
+    -fx-text-fill: #8f8f8f;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-border-color: #8f8f8f;
+    -fx-border-radius: 1px;
+    -fx-border-width: 1px;
+    -fx-background-color: #141414;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 12, 0, 0, 2);
+
+}
+
+.main-menu-button:hover{
+    -fx-border-color: #ffffff;
+    -fx-text-fill: #ffffff;
 }

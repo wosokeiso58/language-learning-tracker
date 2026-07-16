@@ -29,7 +29,7 @@ import java.util.Objects;
 public class DashFX extends Application {
 
     private Label selectedLabel;
-    private Label selectedMLabel;
+    private VBox selectedMLabel;
     private Session selectedSession;
     private SessionManager sessionManager;
     private LocalDate pickedDate = LocalDate.now();
@@ -39,6 +39,15 @@ public class DashFX extends Application {
     private Boolean isEditing = false;
     private final VBox root = new VBox();
     private TabPane tabPane;
+
+
+    ComboBox<Language> languageBox = new ComboBox<>();
+    TextField grindingHoursInput = new TextField();
+    TextField readingHoursInput = new TextField();
+    TextField speakingHoursInput = new TextField();
+    TextField listeningHoursInput = new TextField();
+    TextField writingHoursInput = new TextField();
+
     VBox sessionLayout = new VBox();
 
 
@@ -50,17 +59,7 @@ public class DashFX extends Application {
         root.setPadding(new Insets(20));
         this.tabPane = new TabPane();
 
-        changeLanguageButton.setStyle(
-                "-fx-background-color: rgba(21,26,34,0.44);" +
-                "-fx-text-fill: white;" +
-                "-fx-font-weight: bold;" +
-                "-fx-font-size: 13px;" +
-                "-fx-background-radius: 8px;" +
-                "-fx-cursor: hand;" +
-                "-fx-border-color: white;" +
-                "-fx-border-radius: 6px;" +
-                "-fx-border-width: 1px;" +
-                "-fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);");
+        changeLanguageButton.getStyleClass().add("manager-card");
 
         Tab calendarTab = new Tab("Calendar");
         Tab progressTab = new Tab("Progress");
@@ -82,39 +81,31 @@ public class DashFX extends Application {
 
         Label sessionsLabel = new Label("Sessions:");
 
-        Button createButton = new Button("Create Session Manager");
+        Button createButton = new Button("Create");
         createButton.getStyleClass().add("new-manager-button");
 
-        Button deleteSessionManagerButton = new Button("Delete session manager");
-        Button newSessionManagerButton = new Button("New Session Manager");
+        Button deleteSessionManagerButton = new Button("Delete");
+        deleteSessionManagerButton.getStyleClass().add("main-menu-button");
+        Button newSessionManagerButton = new Button("+ Add Language");
+        newSessionManagerButton.getStyleClass().add("main-menu-button");
 
-        ComboBox<Language> languageBox = new ComboBox<>();
-        languageBox.setPromptText("Select a language");
-        languageBox.getItems().addAll(Language.values());
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.getStyleClass().add("new-manager-button");
-        TextArea newSessionManagerOutput = new TextArea();
 
-        Label grindingHoursLabel = new Label("🎮 Grinding Hours:");
-        grindingHoursLabel.getStyleClass().add("new-manager-label");
-        TextField grindingHoursInput = new TextField();
+        Label grindingHoursLabel = new Label("🎮 Grinding:");
+        grindingHoursInput.getStyleClass().add("new-manager-box");
 
-        Label speakingHoursLabel = new Label("🗣️ Speaking Hours:");
-        speakingHoursLabel.getStyleClass().add("new-manager-label");
-        TextField speakingHoursInput = new TextField();
+        Label speakingHoursLabel = new Label("\uD83C\uDFA4 Speaking:");
 
-        Label listeningHoursLabel = new Label("🎧 Listening Hours:");
-        listeningHoursLabel.getStyleClass().add("new-manager-label");
-        TextField listeningHoursInput = new TextField();
+        speakingHoursInput.getStyleClass().add("new-manager-box");
 
-        Label readingHoursLabel = new Label("📖 Reading Hours:");
-        readingHoursLabel.getStyleClass().add("new-manager-label");
-        TextField readingHoursInput = new TextField();
+        Label listeningHoursLabel = new Label("🎧 Listening:");
 
-        Label writingHoursLabel = new Label("✏️ Writing Hours:");
-        writingHoursLabel.getStyleClass().add("new-manager-label");
-        TextField writingHoursInput = new TextField();
+        Label readingHoursLabel = new Label("📖 Reading:");
+        readingHoursInput.getStyleClass().add("new-manager-box");
+
+        Label writingHoursLabel = new Label("✏ Writing:");
+        writingHoursInput.getStyleClass().add("new-manager-box");
 
 
         Button logMenuButton = new Button("Log session");
@@ -138,10 +129,13 @@ public class DashFX extends Application {
         Button closeButton = new Button("Close");
         Button saveButton = new Button("Save");
         Button closeManagerSelectorButton = new Button("Close");
+        closeManagerSelectorButton.getStyleClass().add("main-menu-button");
 
         EventHandler<ActionEvent> managerSelector = _ -> {
-            VBox sessionManagersDisplay = createSessionManagersDisplay();
+            TilePane sessionManagersDisplay = createSessionManagersDisplay();
             Label noSessionManager = new Label("No session managers found.");
+            Label welcomeLabel = new Label("Welcome back.\nWhat have you studied this time?");
+            welcomeLabel.setStyle("-fx-text-fill: white;"+"-fx-font-size: 30;");
             if (sessionManager == null) {
                 noSessionManager.setVisible(true);
                 noSessionManager.setManaged(true);
@@ -149,8 +143,13 @@ public class DashFX extends Application {
                 noSessionManager.setVisible(false);
                 noSessionManager.setManaged(false);
             }
-            VBox vBox = new VBox(newSessionManagerButton, noSessionManager, sessionManagersDisplay,deleteSessionManagerButton, closeManagerSelectorButton);
+            HBox hBox = new HBox(newSessionManagerButton, deleteSessionManagerButton);
+            hBox.setSpacing(30);
+            hBox.setAlignment(Pos.CENTER);
+            VBox vBox = new VBox(welcomeLabel, noSessionManager, sessionManagersDisplay,hBox, closeManagerSelectorButton);
             vBox.setSpacing(10);
+            vBox.setAlignment(Pos.CENTER);
+            vBox.setStyle("-fx-padding: 10;");
             root.getChildren().setAll(vBox);
 
         };
@@ -162,31 +161,69 @@ public class DashFX extends Application {
             languageLabel.getStyleClass().add("new-manager-label");
             newSessionManagerLabel.setStyle("-fx-font-size: 40");
 
+            cancelButton.getStyleClass().add("new-manager-button");
+
+            languageBox = new ComboBox<>();
+            languageBox.getItems().addAll(Language.values());
+
+            grindingHoursInput = new TextField();
+            readingHoursInput = new TextField();
+            listeningHoursInput = new TextField();
+            writingHoursInput = new TextField();
+            speakingHoursInput = new TextField();
+
+
+            grindingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+            speakingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+            listeningHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+            readingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+            writingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+
+
+            grindingHoursLabel.getStyleClass().add("new-manager-label");
+            speakingHoursLabel.getStyleClass().add("new-manager-label");
+            listeningHoursLabel.getStyleClass().add("new-manager-label");
+            readingHoursLabel.getStyleClass().add("new-manager-label");
+            writingHoursLabel.getStyleClass().add("new-manager-label");
+            languageLabel.getStyleClass().add("new-manager-label");
+
+            speakingHoursInput.getStyleClass().add("new-manager-box");
+            readingHoursInput.getStyleClass().add("new-manager-box");
+            writingHoursInput.getStyleClass().add("new-manager-box");
+            grindingHoursInput.getStyleClass().add("new-manager-box");
+            listeningHoursInput.getStyleClass().add("new-manager-box");
+
+
+            languageBox.getStyleClass().remove("new-manager-bad-box");
+            languageBox.getStyleClass().add("new-manager-box");
+
+
             languageBox.setValue(null);
-            grindingHoursInput.setText("");
-            readingHoursInput.setText("");
-            writingHoursInput.setText("");
-            speakingHoursInput.setText("");
-            listeningHoursInput.setText("");
-            newSessionManagerOutput.setText("");
+            languageBox.setPromptText("Select a language");
+
+
+            grindingHoursInput.setPromptText("Enter hours");
+            readingHoursInput.setPromptText("Enter hours");
+            writingHoursInput.setPromptText("Enter hours");
+            speakingHoursInput.setPromptText("Enter hours");
+            listeningHoursInput.setPromptText("Enter hours");
 
             GridPane grid = new GridPane();
             grid.add(newSessionManagerLabel,0,0,5,1);
-            grid.add(languageLabel,0,1,1,1);
-            grid.add(languageBox,5,1,1,1);
-            grid.add(grindingHoursLabel,0,3,1,1);
-            grid.add(grindingHoursInput,5,3,1,1);
-            grid.add(speakingHoursLabel,0,4,1,1);
-            grid.add(speakingHoursInput,5,4,1,1);
-            grid.add(listeningHoursLabel,0,5,1,1);
-            grid.add(listeningHoursInput,5,5,1,1);
-            grid.add(readingHoursLabel,0,6,1,1);
-            grid.add(readingHoursInput,5,6,1,1);
-            grid.add(writingHoursLabel,0,7,1,1);
-            grid.add(writingHoursInput,5,7,1,1);
+            grid.add(languageLabel,1,1,1,1);
+            grid.add(languageBox,4,1,1,1);
+            grid.add(grindingHoursLabel,1,3,1,1);
+            grid.add(grindingHoursInput,4,3,1,1);
+            grid.add(speakingHoursLabel,1,4,1,1);
+            grid.add(speakingHoursInput,4,4,1,1);
+            grid.add(listeningHoursLabel,1,5,1,1);
+            grid.add(listeningHoursInput,4,5,1,1);
+            grid.add(readingHoursLabel,1,6,1,1);
+            grid.add(readingHoursInput,4,6,1,1);
+            grid.add(writingHoursLabel,1,7,1,1);
+            grid.add(writingHoursInput,4,7,1,1);
             grid.add(createButton, 2,8,1,1);
-            grid.add(cancelButton, 4,8,1,1);
-            grid.add(newSessionManagerOutput,1,9,4,1);
+            grid.add(cancelButton, 3,8,1,1);
 
 
             grid.setHgap(50);
@@ -200,7 +237,62 @@ public class DashFX extends Application {
 
         EventHandler<ActionEvent> createSessionManager = _ -> {
 
-            try {
+            try{
+                int grindingHours = Integer.parseInt(grindingHoursInput.getText());
+                grindingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+                grindingHoursInput.getStyleClass().add("new-manager-box");
+                grindingHoursInput.setPromptText("Enter hours");
+
+            } catch (NumberFormatException ex) {
+                grindingHoursInput.getStyleClass().add("new-manager-bad-box");
+                grindingHoursInput.setPromptText("Input invalid");
+            }
+
+            try{
+                int speakingHours = Integer.parseInt(speakingHoursInput.getText());
+                speakingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+                speakingHoursInput.getStyleClass().add("new-manager-box");
+                speakingHoursInput.setPromptText("Enter hours");
+
+            } catch (NumberFormatException ex) {
+                speakingHoursInput.getStyleClass().add("new-manager-bad-box");
+                speakingHoursInput.setPromptText("Input invalid");
+            }
+            try{
+                int listeningHours = Integer.parseInt(listeningHoursInput.getText());
+                listeningHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+                listeningHoursInput.getStyleClass().add("new-manager-box");
+                listeningHoursInput.setPromptText("Enter hours");
+
+            }  catch (NumberFormatException ex) {
+                listeningHoursInput.getStyleClass().add("new-manager-bad-box");
+                listeningHoursInput.setPromptText("Input invalid");
+            }
+            try{
+                int readingHours = Integer.parseInt(readingHoursInput.getText());
+                readingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+                readingHoursInput.getStyleClass().add("new-manager-box");
+                readingHoursInput.setPromptText("Enter hours");
+
+            }catch (NumberFormatException ex) {
+                readingHoursInput.getStyleClass().add("new-manager-bad-box");
+                readingHoursInput.setPromptText("Input invalid");
+            }
+
+            try{
+                int  writingHours = Integer.parseInt(writingHoursInput.getText());
+                writingHoursInput.getStyleClass().removeAll("new-manager-bad-box");
+                writingHoursInput.getStyleClass().add("new-manager-box");
+                writingHoursInput.setPromptText("Enter hours");
+
+            } catch (NumberFormatException ex) {
+                writingHoursInput.getStyleClass().add("new-manager-bad-box");
+                writingHoursInput.setPromptText("Input invalid");
+            }
+
+
+
+        try {
                 if (!(((Objects.equals(grindingHoursInput.getText(), "")) || (Objects.equals(speakingHoursInput.getText(), "")) || (Objects.equals(readingHoursInput.getText(), "")) || (Objects.equals(listeningHoursInput.getText(), "")) || (Objects.equals(writingHoursInput.getText(), ""))) || (languageBox.getSelectionModel().getSelectedItem() == null))) {
 
                     int grindingHours = Integer.parseInt(grindingHoursInput.getText());
@@ -215,21 +307,28 @@ public class DashFX extends Application {
 
                     sessionManagerList.add(new SessionManager(languageBox.getSelectionModel().getSelectedItem(), 0, 0, LocalDate.now().minusDays(1), grindingHours, speakingHours, readingHours, listeningHours, writingHours));
                     JsonStorage.save(sessionManagerList);
-                    managerSelector.handle(new ActionEvent());
-                } else {
-                    StringBuilder stringBuilder = new StringBuilder();
 
-                    if ((Objects.equals(grindingHoursInput.getText(), "")) || (Objects.equals(speakingHoursInput.getText(), "")) || (Objects.equals(readingHoursInput.getText(), "")) || (Objects.equals(listeningHoursInput.getText(), "")) || (Objects.equals(writingHoursInput.getText(), ""))) {
-                        stringBuilder.append("Hours entry missing.\nEnter the minutes.\n\n");
-                    }
+                    grindingHoursLabel.getStyleClass().add("new-manager-label");
+                    grindingHoursInput.setPromptText("Enter hours");
+
+
+                    managerSelector.handle(new ActionEvent());
+
+
+                } else {
+
                     if (languageBox.getSelectionModel().getSelectedItem() == null) {
-                        stringBuilder.append("No language selected!\nSelect a language.\n\n");
+                        languageBox.setPromptText("Select a language");
+                        languageBox.getStyleClass().remove("new-manager-box");
+                        languageBox.getStyleClass().add("new-manager-bad-box");}
+                    else {
+                        languageBox.setPromptText("Select a language");
+                        languageBox.getStyleClass().remove("new-manager-bad-box");
+                        languageBox.getStyleClass().add("new-manager-box");
                     }
-                    newSessionManagerOutput.setText(stringBuilder.toString());
                 }
 
-            } catch (NumberFormatException ex) {
-                newSessionManagerOutput.setText("Enter valid minutes.");
+            } catch (NumberFormatException _) {
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -363,10 +462,9 @@ public class DashFX extends Application {
                 activityBox.setValue(selectedSession.getActivityType());
                 minutesInput.setText(String.valueOf(selectedSession.getMinutes()));
                 logOutput.setText("");
-                Label editDateLabel = new Label("Editing session " + calculateSessionNumberOfDay() + " on " + selectedSession.getDate());
                 HBox editorButtons = new HBox(saveButton, closeButton);
                 editorButtons.setSpacing(15);
-                VBox editorLayout = new VBox(editDateLabel, newDateLabel, activityTypeLabel, activityBox, minutesLabel, minutesInput, logOutput, editorButtons);
+                VBox editorLayout = new VBox(newDateLabel, activityTypeLabel, activityBox, minutesLabel, minutesInput, logOutput, editorButtons);
                 HBox hBox3 = new HBox(calendar, editorLayout);
                 hBox3.setSpacing(10);
                 calendarTab.setContent(hBox3);
@@ -505,6 +603,7 @@ public class DashFX extends Application {
         changeLanguageButton.setOnAction(managerSelector);
         closeManagerSelectorButton.setOnAction(closeSelector);
 
+        root.setStyle("-fx-background-color: #141414;" + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 12, 0, 0, 2);");
 
         managerSelector.handle(new ActionEvent());
         Scene scene = new Scene(root, 540, 460);
@@ -623,7 +722,7 @@ public class DashFX extends Application {
         VBox left = new VBox(titleLabel, statsBox);
         left.setSpacing(15);
 
-        HBox dashBoardBox = new HBox(left,spacer, getLevelIndicator());
+        HBox dashBoardBox = new HBox(left,spacer, getLevelIndicator(sessionManager,false));
         dashBoardBox.setSpacing(30);
         dashBoardBox.setAlignment(Pos.CENTER_LEFT);
         dashBoardBox.setStyle("-fx-background-color: #151A22;" +
@@ -685,52 +784,54 @@ public class DashFX extends Application {
         return sessionDisplay;
     }
 
-    public VBox createSessionManagersDisplay() {
-        VBox sessionManagersDisplay = new VBox();
+    public TilePane createSessionManagersDisplay() {
+        TilePane sessionManagersDisplay = new TilePane();
+        sessionManagersDisplay.setAlignment(Pos.CENTER);
+        sessionManagersDisplay.setPadding(new Insets(10));
+        sessionManagersDisplay.setVgap(30);
+        sessionManagersDisplay.setHgap(30);
         try {
             if (!Objects.requireNonNull(sessionManagerList).isEmpty()) {
                 int count = 0;
                 for (SessionManager sessionManager1 : sessionManagerList) {
-                    Label sessionManagerLabel = new Label(sessionManager1.getLanguage().toString());
+                    Label sessionManagerStats = new Label(sessionManager1.getLanguage().toString()+"\n" + minutesToHours(sessionManager1.getTotalMinutes()));
+                    VBox sessionManagerLabel = new VBox(sessionManagerStats,getLevelIndicator(sessionManager1,true));
                     sessionManagersDisplay.getChildren().add(sessionManagerLabel);
-                    sessionManagerLabel.setStyle(
-                            "-fx-border-color: #00bbff;"
-                    );
+                    sessionManagerLabel.getStyleClass().remove("selected-manager-card");
+                    sessionManagerLabel.getStyleClass().add("manager-card");
                     if (count == 0) {
                         sessionManager = sessionManager1;
                         selectedMLabel = sessionManagerLabel;
-                        selectedMLabel.setStyle(
-                                "-fx-background-color: lightblue;" + "-fx-border-color: blue;"
-                        );
+                        selectedMLabel.getStyleClass().remove("manager-card");
+                        selectedMLabel.getStyleClass().add("selected-manager-card");
                     }
                     count++;
                     sessionManagerLabel.setOnMouseClicked(_ -> {
                         if (selectedMLabel != null) {
-                            selectedMLabel.setStyle(
-                                    "-fx-background-color: white;" + "-fx-border-color: blue;");
+                            selectedMLabel.getStyleClass().remove("selected-manager-card");
+                            selectedMLabel.getStyleClass().add("manager-card");
                         }
 
                         selectedMLabel = sessionManagerLabel;
                         sessionManager = sessionManager1;
-                        sessionManagerLabel.setStyle(
-                                "-fx-background-color: lightblue;" + "-fx-border-color: blue;"
-                        );
+                        sessionManagerLabel.getStyleClass().remove("manager-card");
+                        sessionManagerLabel.getStyleClass().add("selected-manager-card");
 
                     });
+                    System.out.println(sessionManagerLabel.getStyleClass().getFirst());
                 }
             } else {
                 sessionManager = null;
                 selectedMLabel = null;
             }
         } catch (NullPointerException ex) {
-            sessionManagersDisplay = new VBox();
+            sessionManagersDisplay = new TilePane();
         }
-        sessionManagersDisplay.setSpacing(10);
 
         return sessionManagersDisplay;
     }
 
-    public StackPane getLevelIndicator() {
+    public StackPane getLevelIndicator(SessionManager manager, boolean main) {
         Circle background = new Circle(34);
         background.setFill(Paint.valueOf("#2a2c30"));
         background.setCenterX(25);
@@ -747,18 +848,24 @@ public class DashFX extends Application {
         progress.setRadiusX(40);
         progress.setRadiusY(40);
         progress.setStartAngle(90);
-        progress.setLength(-360 * (sessionManager.getTotalProgress() / 100));
+        progress.setLength(-360 * (manager.getTotalProgress() / 100));
         progress.setStroke(Color.MEDIUMPURPLE);
         progress.setStrokeWidth(6);
         progress.setFill(null);
         progress.setType(ArcType.OPEN);
-        progress.setCenterX(48);
-        progress.setCenterY(57);
+        if(main){
+            progress.setCenterX(49);
+            progress.setCenterY(52);
+        }
+        else{
+            progress.setCenterX(48);
+            progress.setCenterY(57);
+        }
         progress.setManaged(false);
 
-        Label symbolLabel = new Label(" " + sessionManager.getLevel().getSymbol());
+        Label symbolLabel = new Label(" " + manager.getLevel().getSymbol());
         symbolLabel.setStyle("-fx-font-size: 17;"+"-fx-text-fill: white;" + "-fx-font-weight: bold;");
-        Label percentageLabel = new Label(sessionManager.getTotalProgress() + "%");
+        Label percentageLabel = new Label(manager.getTotalProgress() + "%");
         percentageLabel.setStyle("-fx-font-size: 12;"+"-fx-text-fill: lightgrey;" + "-fx-font-weight: bold;");
         percentageLabel.setPrefWidth(50);
         percentageLabel.setMinWidth(50);
@@ -773,18 +880,6 @@ public class DashFX extends Application {
         return stack;
     }
 
-    public int calculateSessionNumberOfDay() {
-        List<Session> daySessions = sessionManager.getSessionsByDate(pickedDate);
-        int count = 0;
-        for (Session session : daySessions) {
-            if (session.equals(selectedSession)) {
-                break;
-            }
-            count++;
-        }
-        return count + 1;
-    }
-
     public String minutesToHours(int num) {
         int hours = num / 60;
         int minutes = num % 60;
@@ -794,6 +889,34 @@ public class DashFX extends Application {
         }
         return hours + "h " + minutes + "m";
     }
+
+//    public void buildSessionTab(){
+//
+//        if (!isEditing) {
+//            Button logMenuButton = new Button("Log session");
+//            Button editButton = new Button("Edit session");
+//            Button deleteButton = new Button("Delete session");
+//            sessionLayout = new VBox(sessionsLabel, sessionDisplay, logMenuButton, editButton, deleteButton);
+//            sessionLayout.setSpacing(10);
+//            HBox calendarLayout = new HBox(calendar, sessionLayout);
+//            calendarTab.setContent(calendarLayout);
+//        }
+//        tabPane.requestLayout();
+//    }
+
+    //TODO you're trying to get rid of the close button on the welcome menu
+    //TODO then switch the title to
+    // What did you work on today?
+    //or
+    //Ready to log today's progress?
+    //or
+    //Choose a language to update.
+    //or
+    //Which language did you study today?
+    //TODO then consider making the hierarchy of each session manager card language -> level ring -> hours
+    //TODO consider adding more animations to stuff
+    //TODO make the message change when a language is selected. something like "Log your (language) session.\n click again to continue"
+
 
     //BUG NOTES
     //FIND BEST BALANCE FOR XP, MAKE DELETION MORE ACCURATE
