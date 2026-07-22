@@ -1,61 +1,21 @@
 {
   "sessionManagers" : [ {
     "sessions" : [ {
-      "minutes" : 44,
+      "minutes" : 324,
       "activityType" : "SHADOWING",
-      "date" : "2026-07-15"
+      "date" : "2026-07-22"
+    }, {
+      "minutes" : 324,
+      "activityType" : "SHADOWING",
+      "date" : "2026-07-22"
     } ],
     "language" : "JAPANESE",
     "activeStreak" : 1,
-    "inactiveStreak" : 2,
-    "lastStreakUpdate" : "2026-07-15",
-    "startReadingHours" : 5,
-    "startGrindingHours" : 5,
-    "startSpeakingHours" : 5,
-    "startListeningHours" : 5,
-    "startWritingHours" : 5
-  }, {
-    "sessions" : [ ],
-    "language" : "ESPERANTO",
-    "activeStreak" : 0,
-    "inactiveStreak" : 0,
-    "lastStreakUpdate" : "2026-07-13",
-    "startReadingHours" : 44,
-    "startGrindingHours" : 4,
-    "startSpeakingHours" : 44,
-    "startListeningHours" : 4,
-    "startWritingHours" : 4
-  }, {
-    "sessions" : [ ],
-    "language" : "GERMAN",
-    "activeStreak" : 0,
-    "inactiveStreak" : 0,
-    "lastStreakUpdate" : "2026-07-13",
-    "startReadingHours" : 4,
-    "startGrindingHours" : 44,
-    "startSpeakingHours" : 44,
-    "startListeningHours" : 4,
-    "startWritingHours" : 4
-  }, {
-    "sessions" : [ ],
-    "language" : "GERMAN",
-    "activeStreak" : 0,
-    "inactiveStreak" : 0,
-    "lastStreakUpdate" : "2026-07-14",
-    "startReadingHours" : 4,
-    "startGrindingHours" : 5,
-    "startSpeakingHours" : 5,
-    "startListeningHours" : 4,
-    "startWritingHours" : 4
-  }, {
-    "sessions" : [ ],
-    "language" : "RUSSIAN",
-    "activeStreak" : 0,
-    "inactiveStreak" : 0,
-    "lastStreakUpdate" : "2026-07-15",
-    "startReadingHours" : 3,
-    "startGrindingHours" : 333,
-    "startSpeakingHours" : 333,
+    "inactiveStreak" : 1,
+    "lastStreakUpdate" : "2026-07-22",
+    "startReadingHours" : 33,
+    "startGrindingHours" : 33,
+    "startSpeakingHours" : 33,
     "startListeningHours" : 33,
     "startWritingHours" : 33
   } ]
