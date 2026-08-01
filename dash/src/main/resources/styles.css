@@ -1,59 +1,15 @@
-.new-manager-button{
-    -fx-background-color: #8da6c5;
-    -fx-text-fill: #fadaff;
-    -fx-background-radius:10;
-    -fx-padding:8 18 8 18;
-    -fx-font-weight:bold;
-}
-
-.new-manager-button:hover{
-    -fx-background-color: #788ea1;
-}
-
-/*TODO write a new manager idk thing for the input box, output box and the language box*/
-
 .new-manager-box{
-    -fx-background-color: #8da6c5;
+    -fx-background-color: #607f93;
     -fx-text-fill: #fadaff;
-    -fx-prompt-text-fill:#fadaff;
+    -fx-prompt-text-fill: rgba(250, 218, 255, 0.48);
     -fx-background-radius:10;
     -fx-padding:8 18 8 18;
     -fx-font-weight:bold;
 }
-.new-manager-box .list-cell{
-    -fx-text-fill:#fadaff;
-    -fx-background-color:#8da6c5;
+.new-manager-box:hover{
+    -fx-background-color: #87a1b3;
 }
 
-.new-manager-box .list-cell{
-    -fx-text-fill:#fadaff;
-}
-
-.new-manager-box .list-cell:hover{
-    -fx-background-color:#6D5DF6;
-}
-
-.new-manager-bad-box{
-    -fx-background-color: #ff9c9c;
-    -fx-text-fill: #e33cff;
-    -fx-prompt-text-fill:#e33cff;
-    -fx-background-radius:10;
-    -fx-padding:8 18 8 18;
-    -fx-font-weight:bold;
-}
-
-.new-manager-bad-box .list-cell{
-    -fx-text-fill:#e33cff;
-    -fx-background-color:#ff9c9c;
-}
-
-.new-manager-bad-box .list-cell{
-    -fx-text-fill:#e33cff;
-}
-
-.new-manager-bad-box .list-cell:hover{
-    -fx-background-color: #a198f4;
-}
 
 .new-manager-label{
 
@@ -68,14 +24,14 @@
 .manager-card{
 
     -fx-background-color: rgba(21,26,34,0.44);
-    -fx-background-radius: 8px;
+    -fx-background-radius: 3px;
     -fx-text-fill: #ffffff;
     -fx-cursor: hand;
     -fx-border-color: grey;
     -fx-border-radius: 3px;
     -fx-border-width: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
-
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 0, 0, 0, 0);
+    -fx-padding:5 5 5 5;
 }
 
 .manager-card .label{
@@ -96,12 +52,13 @@
 .selected-manager-card{
 
     -fx-background-color: rgba(21,26,34,0.44);
-    -fx-background-radius: 8px;
+    -fx-background-radius: 2px;
     -fx-cursor: hand;
     -fx-border-color: #ffa6fc;
     -fx-border-radius: 2px;
     -fx-border-width: 2px;
-    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 0, 0, 0, 0);
+    -fx-padding:5 5 5 5;
 }
 
 .selected-manager-card .label{
@@ -114,7 +71,7 @@
     -fx-text-fill: #8f8f8f;
     -fx-font-weight: bold;
     -fx-font-size: 13px;
-    -fx-background-radius: 8px;
+    -fx-background-radius: 1px;
     -fx-cursor: hand;
     -fx-border-color: #8f8f8f;
     -fx-border-radius: 1px;
@@ -127,4 +84,387 @@
 .main-menu-button:hover{
     -fx-border-color: #ffffff;
     -fx-text-fill: #ffffff;
+}
+
+.day-label{
+    -fx-background-color: rgba(21,26,34,0.44);
+    -fx-background-radius: 8px;
+    -fx-text-fill: #8f8f8f;
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-border-color: grey;
+    -fx-border-radius: 3px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
+    -fx-padding:2 2 2 2;
+
+}
+
+
+.day-label:hover{
+    -fx-border-color: #ffffff;
+    -fx-text-fill: #ffffff;
+}
+
+.selected-day-label{
+
+    -fx-padding:2 2 2 2;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 3px;
+    -fx-font-size: 15px;
+    -fx-background-color: linear-gradient(#B388FF, #8E63FF);
+    -fx-border-color: #D8C2FF;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(165,124,255,0.45), 16, 0.3, 0, 3);
+}
+
+.tab-pane {
+    -fx-background-color: #171717;
+}
+
+.tab-pane .tab-header-area {
+    -fx-padding: 0 0 8 0;
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: transparent;
+}
+.tab-pane .tab {
+    -fx-background-color: #242424;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 18 8 18;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.tab-pane .tab:hover {
+    -fx-background-color: #303030;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: #4D6282;
+    -fx-border-color: #A57CFF;
+    -fx-border-width: 0 0 3 0;
+}
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #BEBEBE;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+.tab-pane .tab-content-area {
+    -fx-background-color: #202124;
+    -fx-background-radius: 18;
+    -fx-padding: 24;
+}
+.tab-pane .tab:selected:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.session-label{
+
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-background-color: #4D6282;
+    -fx-effect: dropshadow(gaussian, rgba(11, 52, 81, 0.65), 12, 0, 0, 2);
+    -fx-background-radius: 16px;
+    -fx-font-size: 15px;
+    -fx-border-radius: 16px;
+    -fx-border-width: 2px;
+    -fx-padding:10 10 10 10;
+
+}
+
+.session-label:hover{
+    -fx-border-color: #ffffff;
+    -fx-translate-y: -1;
+
+}
+
+.selected-session-label{
+
+    -fx-padding:10 10 10 10;
+    -fx-background-color: #A57CFF;
+    -fx-background-radius: 16px;
+    -fx-cursor: hand;
+    -fx-border-color: #ffffff;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 16px;
+    -fx-font-size: 15px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 6, 0, 0, 2);
+}
+
+.sessions-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.sessions-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.sessions-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+.sessions-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-padding: 0 2 0 2;
+}
+
+.sessions-scroll .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6;
+}
+
+.sessions-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #4D6282;
+    -fx-background-radius: 6;
+}
+
+.sessions-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #A57CFF;
+}
+
+.default-box {
+    -fx-background-color: #4D6282;
+    -fx-background-radius: 15;
+    -fx-padding: 8;
+    -fx-text-fill: #FADAFF;
+    -fx-prompt-text-fill: rgba(250, 218, 255, 0.48);
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.default-box:hover {
+    -fx-background-color: #6980A5;
+}
+
+.default-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FADAFF;
+    /*why does the prompt text appear this colour?*/
+}
+.default-box .list-cell:empty {
+    -fx-text-fill: rgba(250, 218, 255, 0.48);
+}
+.default-box .combo-box-popup .list-view {
+    -fx-background-color: #6980A5;
+    -fx-background-radius: 12;
+}
+
+.default-box .combo-box-popup .list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FADAFF;
+    -fx-padding: 8 12 8 12;
+}
+
+.default-box .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #A57CFF;
+    -fx-background-radius: 8;
+}
+
+.default-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* Arrow itself */
+.default-box .arrow {
+    -fx-background-color: #FADAFF;
+}
+
+
+.log-button{
+    -fx-background-color: #4a7165;
+    -fx-text-fill: #fadaff;
+    -fx-background-radius:15;
+    -fx-padding: 8;
+    -fx-font-weight:bold;
+    -fx-font-size: 20;
+}
+.log-button:hover{
+    -fx-background-color: #74a395;
+}
+
+.close-button{
+    -fx-background-color: #505d67;
+    -fx-text-fill: #fadaff;
+    -fx-background-radius:15;
+    -fx-padding: 8;
+    -fx-font-weight:bold;
+    -fx-font-size: 20;
+}
+.close-button:hover{
+    -fx-background-color: #7e909f;
+}
+
+.calendar-menu-button{
+
+    -fx-background-color: #4a7165;
+    -fx-background-radius: 5px;
+    -fx-text-fill: #ffffff;
+    -fx-cursor: hand;
+    -fx-border-color: #74a395;
+    -fx-border-radius: 5px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.4), 0, 0, 0, 0);
+    -fx-padding: 8;
+    -fx-font-size: 15;
+}
+.calendar-menu-button:hover{
+    -fx-background-color: #74a395;
+    -fx-border-color: #b2dccf;
+    -fx-translate-y: -1;
+}
+
+
+.xp-bar {
+    -fx-pref-height: 100px;
+}
+
+
+.xp-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.xp-bar{
+    -fx-pref-height: 72;
+}
+
+.xp-bar .bar {
+    -fx-background-color: linear-gradient(to right, #A57CFF, #FADAFF);
+}
+
+
+.xp-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.listening-bar {
+    -fx-pref-height: 24;
+}
+
+.listening-bar .bar {
+    -fx-background-color: linear-gradient(to right, #5DADE2, #85C1E9);
+}
+
+
+.listening-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.speaking-bar {
+    -fx-pref-height: 24;
+}
+
+.speaking-bar .bar {
+    -fx-background-color: linear-gradient(to right, #58D68D, #82E0AA);
+}
+
+
+.speaking-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.reading-bar {
+    -fx-pref-height: 24;
+}
+
+.reading-bar .bar {
+    -fx-background-color: linear-gradient(to right, #F5B041, #F8C471);
+}
+
+
+.reading-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.grinding-bar {
+    -fx-pref-height: 24;
+}
+
+.grinding-bar .bar {
+    -fx-background-color: linear-gradient(to right, #4D6282, #aabbdc);
+}
+
+
+
+.grinding-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.writing-bar {
+    -fx-pref-height: 24;
+}
+
+.writing-bar . bar {
+    -fx-background-color: linear-gradient(to right, #ff229c, #ff7cc6);
+}
+
+
+.writing-bar .track {
+    -fx-background-color: #2A2A2A;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 2;
+}
+
+.progress-label{
+
+    -fx-text-fill: #fadaff;
+
+    -fx-font-size:15;
+}
+
+.progress-label{
+
+    -fx-text-fill: #fadaff;
+
+    -fx-font-size:15;
+}
+
+.chart-pie-label {
+    -fx-fill: #FADAFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 999;
+}
+
+.chart-title {
+    -fx-text-fill: #FFD8FF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
 }

@@ -7,6 +7,16 @@ public enum ActivityCategory {
     WRITING,
     GRINDING;
 
+    public String getProgressBarStyle() {
+        return switch (this) {
+            case READING -> "reading-bar";
+            case LISTENING -> "listening-bar";
+            case SPEAKING -> "speaking-bar";
+            case GRINDING -> "grinding-bar";
+            case WRITING -> "writing-bar";
+        };
+    }
+
     @Override
     public String toString() {
         return switch (this) {

@@ -189,7 +189,7 @@ public class SessionManager {
 
 
     public int getTotalMinutes() {
-        int totalMinutes = startGrindingMinutes + startSpeakingMinutes + startWritingMinutes + startListeningMinutes + startReadingMinutes;
+        int totalMinutes = 0;
         for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
             for (Session session : entry.getValue()) {
                 totalMinutes += session.getMinutes();
@@ -208,8 +208,10 @@ public class SessionManager {
 
     public int getTotalMinutes(LocalDate date) {
         int totalMinutes = 0;
-        for (Session session : this.sessionsByDate.get(date)) {
-            totalMinutes += session.getMinutes();
+        if(this.sessionsByDate.containsKey(date)) {
+            for (Session session : this.sessionsByDate.get(date)) {
+                totalMinutes += session.getMinutes();
+            }
         }
         return totalMinutes;
     }
