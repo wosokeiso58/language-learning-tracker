@@ -1,20 +1,30 @@
 package org.example;
 public enum ActivityType {
 
-    READ_TEXT,
-    WATCH_CONTENT_WITH_SUBS,
-    WATCH_CONTENT_WITHOUT_SUBS,
-    COMPREHENSIBLE_INPUT_WITHOUT_SUBS,
-    COMPREHENSIBLE_INPUT_WITH_SUBS,
-    SHADOWING,
-    SPOKEN_CONVERSATION,
-    WRITTEN_CONVERSATION,
-    HANDWRITE_TEXT,
-    SCRIPT_PRACTICE,
-    ANKI,
-    TEXTBOOK,
-    PREPARED_SPEECH;
+    READ_TEXT("Read Text"),
+    WATCH_CONTENT_WITH_SUBS("Content Subs"),
+    WATCH_CONTENT_WITHOUT_SUBS("Content No Subs"),
+    COMPREHENSIBLE_INPUT_WITHOUT_SUBS("CI No Subs"),
+    COMPREHENSIBLE_INPUT_WITH_SUBS("CI Subs"),
+    SHADOWING("Shadowing"),
+    SPOKEN_CONVERSATION("Conversation"),
+    WRITTEN_CONVERSATION("Messaging"),
+    HANDWRITE_TEXT("Handwriting"),
+    SCRIPT_PRACTICE("Script"),
+    ANKI("Anki"),
+    TEXTBOOK_WORK("Textbook"),
+    PREPARED_SPEECH("Prepared Speech"),
+    CROSSTALK("Crosstalk"),;
 
+    private final String displayName;
+
+    ActivityType(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
 
     public double getReadingCoefficient(){
 
@@ -22,7 +32,7 @@ public enum ActivityType {
             case READ_TEXT -> 1;
             case WATCH_CONTENT_WITH_SUBS, HANDWRITE_TEXT, SHADOWING, SCRIPT_PRACTICE -> 0.25;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, WRITTEN_CONVERSATION -> 0.75;
-            case TEXTBOOK, ANKI, PREPARED_SPEECH -> 0.5;
+            case TEXTBOOK_WORK, ANKI, PREPARED_SPEECH -> 0.5;
             default -> 0;
         };
 
@@ -34,7 +44,7 @@ public enum ActivityType {
             case HANDWRITE_TEXT -> 1;
             case WRITTEN_CONVERSATION -> 0.25;
             case SCRIPT_PRACTICE -> 0.5;
-            case TEXTBOOK -> 0.75;
+            case TEXTBOOK_WORK -> 0.75;
             default -> 0;
         };
     }
@@ -75,10 +85,10 @@ public enum ActivityType {
     public ActivityCategory getMainCategory(){
         return switch (this) {
             case HANDWRITE_TEXT, SCRIPT_PRACTICE -> ActivityCategory.WRITING;
-            case ANKI, TEXTBOOK, WRITTEN_CONVERSATION -> ActivityCategory.GRINDING;
+            case ANKI, TEXTBOOK_WORK, WRITTEN_CONVERSATION -> ActivityCategory.GRINDING;
             case SPOKEN_CONVERSATION, SHADOWING, PREPARED_SPEECH -> ActivityCategory.SPEAKING;
             case COMPREHENSIBLE_INPUT_WITH_SUBS, WATCH_CONTENT_WITH_SUBS, WATCH_CONTENT_WITHOUT_SUBS,
-                 COMPREHENSIBLE_INPUT_WITHOUT_SUBS -> ActivityCategory.LISTENING;
+                 COMPREHENSIBLE_INPUT_WITHOUT_SUBS, CROSSTALK -> ActivityCategory.LISTENING;
             case READ_TEXT -> ActivityCategory.READING;
         };
     }
@@ -88,7 +98,7 @@ public enum ActivityType {
         return switch (this){
             case ANKI -> "Anki";
             case HANDWRITE_TEXT -> "Writing Text";
-            case TEXTBOOK -> "Textbook Work";
+            case TEXTBOOK_WORK -> "Textbook Work";
             case SHADOWING -> "Shadowing";
             case SPOKEN_CONVERSATION -> "Spoken Conversation";
             case READ_TEXT -> "Reading Text";
@@ -99,6 +109,7 @@ public enum ActivityType {
             case COMPREHENSIBLE_INPUT_WITH_SUBS -> "Comprehensible Input With Subtitles";
             case COMPREHENSIBLE_INPUT_WITHOUT_SUBS  -> "Comprehensible Input Without Subtitles";
             case SCRIPT_PRACTICE -> "Script Practice";
+            case CROSSTALK -> "Crosstalk";
         };
     }
 

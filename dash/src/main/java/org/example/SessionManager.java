@@ -337,7 +337,7 @@ public class SessionManager {
     public double getXpProgress(ActivityCategory activityCategory) {
         int xp = getXp(activityCategory)-getCategoryFloor(activityCategory);
         double percentage = ((double) xp / (getCategoryCeiling(activityCategory)-getCategoryFloor(activityCategory))) * 100;
-        return Math.round(percentage * Math.pow(10, 3)) / Math.pow(10, 3);
+        return Math.round(percentage * Math.pow(10, 2)) / Math.pow(10, 2);
     }
 
     public double getTotalProgress() {

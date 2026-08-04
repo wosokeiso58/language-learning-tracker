@@ -1,11 +1,11 @@
 package org.example;
 
 public enum ActivityCategory {
-    READING,
-    LISTENING,
+    GRINDING,
     SPEAKING,
-    WRITING,
-    GRINDING;
+    LISTENING,
+    READING,
+    WRITING;
 
     public String getProgressBarStyle() {
         return switch (this) {

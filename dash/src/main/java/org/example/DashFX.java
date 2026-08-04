@@ -28,6 +28,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.fontawesome6.FontAwesomeSolid;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -87,7 +88,6 @@ public class DashFX extends Application {
         );
         timeline.play();
     }
-
 
 
     public StackPane getLevelIndicator(SessionManager manager, boolean main) {
@@ -168,7 +168,7 @@ public class DashFX extends Application {
         Label l = new Label("Date : " + pickedDate);
         Label monthLabel = new Label("Month:" + month);
         Label noSessionsLabel = new Label("No sessions logged today yet.");
-        int priorHours = sessionManager.getStartGrindingHours()+sessionManager.getStartListeningHours()+sessionManager.getStartListeningHours()+sessionManager.getStartSpeakingHours()+sessionManager.getStartWritingHours();
+        int priorHours = sessionManager.getStartGrindingHours() + sessionManager.getStartListeningHours() + sessionManager.getStartListeningHours() + sessionManager.getStartSpeakingHours() + sessionManager.getStartWritingHours();
         private final VBox calendar = buildCalendar();
         private final VBox mainMenu = buildMainMenu();
         private final VBox logMenu = buildLogMenu();
@@ -191,53 +191,54 @@ public class DashFX extends Application {
 
             progressTab.setOnSelectionChanged(_ -> {
                 if (sessionManager.getXp() != lastXp) {
-                    Label xpLabel = new Label("Total XP to " + sessionManager.getNextLevel(sessionManager.getLevel()).toString() + ": " + sessionManager.getXp() + "/" + sessionManager.getCeiling());
-                    xpLabel.getStyleClass().add("progress-label");
-                    Label totalProgressLabel = new Label("Total progress to " + sessionManager.getNextLevel(sessionManager.getLevel()) + ": " + sessionManager.getTotalProgress() + "%");
-                    totalProgressLabel.getStyleClass().add("progress-label");
+                    Label xpLabel = new Label(sessionManager.getXp() + "/" + sessionManager.getCeiling() + " XP");
+                    xpLabel.getStyleClass().add("progress-secondary-label");
+                    Label totalProgressLabel = new Label(sessionManager.getTotalProgress() + "% of the way to " + sessionManager.getNextLevel(sessionManager.getLevel()));
+                    totalProgressLabel.getStyleClass().add("progress-secondary-label");
                     Label levelLabel = new Label(sessionManager.getLevel().toString());
                     levelLabel.getStyleClass().add("progress-label");
-                    ProgressBar totalProgress = new ProgressBar();
-                    totalProgress.getStyleClass().add("xp-bar");
-                    totalProgress.setProgress(sessionManager.getTotalProgress() / 100);
+                    ProgressBar totalProgressBar = new ProgressBar();
+                    totalProgressBar.getStyleClass().add("xp-bar");
+                    totalProgressBar.setProgress(sessionManager.getTotalProgress() / 100);
                     Label nextLevelLabel = new Label(sessionManager.getNextLevel(sessionManager.getLevel()).toString());
                     nextLevelLabel.getStyleClass().add("progress-label");
-                    Label totalMinutesLabel = new Label("Total study time: " + minutesToHours(sessionManager.getTotalMinutes()+(priorHours*60)));
-                    totalMinutesLabel.getStyleClass().add("progress-label");
-                    Label priorMinutesLabel = new Label("Prior study time (unlogged): " + priorHours +"h");
-                    priorMinutesLabel.getStyleClass().add("progress-label");
-                    Label loggedMinutesLabel = new Label("Logged study time: " + minutesToHours(sessionManager.getTotalMinutes()));
-                    loggedMinutesLabel.getStyleClass().add("progress-label");
-                    Label weekMinutesLabel = new Label("Week study time: " + minutesToHours(sessionManager.getWeekMinutes()));
-                    weekMinutesLabel.getStyleClass().add("progress-label");
-                    Label retentionLabel = new Label("Retention score: " + sessionManager.getRetention());
-                    retentionLabel.getStyleClass().add("progress-label");
-                    Label consistencyLabel = new Label("Consistency bonus: " + sessionManager.getConsistencyBonus());
-                    consistencyLabel.getStyleClass().add("progress-label");
-                    Label varietyLabel = new Label("Current variety score over last 14 days: " + sessionManager.getVariety());
-                    varietyLabel.getStyleClass().add("progress-label");
-                    HBox categoryProgress = new HBox();
+                    levelLabel.setStyle("-fx-font-size: 20");
+                    nextLevelLabel.setStyle("-fx-font-size: 20");
+                    totalProgressLabel.setStyle("-fx-font-size: 20");
+                    xpLabel.setStyle("-fx-font-size: 20");
+
+
+                    VBox categoryProgress = new VBox();
+                    categoryProgress.setSpacing(10);
 
                     for (ActivityCategory activityCategory : ActivityCategory.values()) {
-                        Label categoryXpLabel = new Label(activityCategory.toString().substring(0, 1).toUpperCase() + activityCategory.toString().substring(1) + " XP to " + sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)).toString() + ": " + sessionManager.getXp(activityCategory) + "/" + sessionManager.getCeiling(activityCategory));
-                        categoryXpLabel.getStyleClass().add("progress-label");
-                        Label categoryProgressLabel = new Label("Progress to " + sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)) + ": " + sessionManager.getXpProgress(activityCategory) + "%");
-                        categoryProgressLabel.getStyleClass().add("progress-label");
-                        Label categorylevelLabel = new Label(sessionManager.getLevel(activityCategory).toString());
-                        categorylevelLabel.getStyleClass().add("progress-label");
+                        Label categoryProgressLabel = new Label(sessionManager.getXpProgress(activityCategory) + "% of the way to " + sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)));
+                        categoryProgressLabel.getStyleClass().add("progress-secondary-label");
+                        Label categoryLevelLabel = new Label(sessionManager.getLevel(activityCategory).toString());
+                        categoryLevelLabel.getStyleClass().add("progress-label");
                         ProgressBar categoryProgressBar = new ProgressBar();
                         categoryProgressBar.getStyleClass().add(activityCategory.getProgressBarStyle());
                         categoryProgressBar.setProgress(sessionManager.getXpProgress(activityCategory) / 100);
                         Label categoryNextLevelLabel = new Label(sessionManager.getNextLevel(sessionManager.getLevel(activityCategory)).toString());
                         categoryNextLevelLabel.getStyleClass().add("progress-label");
-                        HBox categoryProgressBarBox = new HBox(categorylevelLabel, categoryProgressBar, categoryNextLevelLabel);
-                        categoryProgressBarBox.setSpacing(5);
-                        VBox categoryProgressBox = new VBox(categoryXpLabel, categoryProgressLabel, categoryProgressBarBox);
-                        categoryProgressBox.setSpacing(5);
+                        Label categoryXpLabel = new Label(sessionManager.getXp(activityCategory) + "/" + sessionManager.getCeiling(activityCategory) + " XP");
+                        categoryXpLabel.getStyleClass().add("progress-secondary-label");
+                        categoryProgressBar.setMaxWidth(Double.MAX_VALUE);
+                        HBox.setHgrow(categoryProgressBar, Priority.ALWAYS);
+                        categoryProgressBar.setPrefHeight(24);
+                        categoryProgressBar.setMinHeight(24);
+                        BorderPane categoryXpRow = new BorderPane();
+                        categoryXpRow.setLeft(categoryLevelLabel);
+                        categoryXpRow.setCenter(categoryXpLabel);
+                        categoryXpRow.setRight(categoryNextLevelLabel);
+                        Label currentCategoryLevelLabel = new Label("Current " + activityCategory + " level: " + sessionManager.getLevel());
+                        currentCategoryLevelLabel.getStyleClass().add("progress-label");
+                        VBox categoryProgressBox = new VBox(currentCategoryLevelLabel, categoryProgressLabel, categoryProgressBar, categoryXpRow);
+                        categoryProgressBox.getStyleClass().add("progress-card");
+                        categoryProgressBox.setAlignment(Pos.CENTER);
+
                         categoryProgress.getChildren().add(categoryProgressBox);
                     }
-
-                    categoryProgress.setSpacing(15);
 
                     ObservableList<Data> xpChartData = FXCollections.observableArrayList(
                             new PieChart.Data("Reading XP", sessionManager.getXp(ActivityCategory.READING)),
@@ -248,47 +249,176 @@ public class DashFX extends Application {
                     );
 
                     PieChart xpPieChart = new PieChart(xpChartData);
-                    xpPieChart.setTitle("Study XP by Activity category");
+                    xpPieChart.setTitle("XP by Activity category");
                     xpPieChart.setLegendVisible(false);
                     xpPieChart.setLabelsVisible(true);
+                    xpPieChart.setPrefSize(500, 500);
+                    xpPieChart.setMaxSize(500,500);
+                    xpPieChart.setMinSize(500,500);
 
                     ObservableList<Data> minutesChartData = FXCollections.observableArrayList();
                     for (ActivityType activityType : ActivityType.values()) {
-                        minutesChartData.add(new PieChart.Data(activityType.toString() + " (" + minutesToHours(sessionManager.getTotalMinutes(activityType)) + ")", sessionManager.getTotalMinutes(activityType)));
+                        int minutes = sessionManager.getTotalMinutes(activityType);
+                        if (minutes > 0) {
+                            minutesChartData.add(new PieChart.Data(activityType.getDisplayName(), minutes));
+                        }
                     }
                     PieChart minutesPieChart = new PieChart(minutesChartData);
-                    minutesPieChart.setTitle("Study Minutes by Activity type");
+                    minutesPieChart.setTitle("Minutes by Activity type");
                     minutesPieChart.setLegendVisible(false);
                     minutesPieChart.setLabelsVisible(true);
+                    minutesPieChart.setPrefSize(500, 500);
+                    minutesPieChart.setMaxSize(500,500);
+                    minutesPieChart.setMinSize(500,500);
 
-                    HBox progressRow = new HBox(10);
-                    progressRow.setAlignment(Pos.CENTER);
-                    progressRow.setMinHeight(32);
 
-                    totalProgress.setMaxWidth(Double.MAX_VALUE);
+                    totalProgressBar.setMaxWidth(Double.MAX_VALUE);
+                    HBox.setHgrow(totalProgressBar, Priority.ALWAYS);
+                    totalProgressBar.setPrefHeight(48);
+                    totalProgressBar.setMinHeight(48);
+                    totalProgressBar.setMaxHeight(48);
+                    BorderPane xpRow = new BorderPane();
+                    xpRow.setLeft(levelLabel);
+                    xpRow.setCenter(xpLabel);
+                    xpRow.setRight(nextLevelLabel);
 
-                    HBox.setHgrow(totalProgress, Priority.ALWAYS);
-
-                    progressRow.getChildren().addAll(levelLabel, totalProgress, nextLevelLabel);
-
-                    Label currentLevelLabel = new Label("Current Level: "+sessionManager.getLevel());
+                    Label currentLevelLabel = new Label("Current level: " + sessionManager.getLevel());
                     currentLevelLabel.getStyleClass().add("progress-label");
                     currentLevelLabel.setStyle("-fx-font-size: 32");
-                    xpLabel.setStyle("-fx-font-size: 24");
-                    totalProgressLabel.setStyle("-fx-font-size: 24");
-                    VBox progressBox = new VBox(currentLevelLabel, progressRow, xpLabel, totalProgressLabel);
+                    VBox progressBox = new VBox(currentLevelLabel, totalProgressLabel, totalProgressBar, xpRow);
+                    progressBox.getStyleClass().add("progress-card");
                     progressBox.setAlignment(Pos.CENTER);
-                    progressBox.setSpacing(10);
+
+
+                    FontIcon timeIcon = new FontIcon(FontAwesomeSolid.CLOCK);
+                    timeIcon.setIconSize(35);
+                    timeIcon.setIconColor(Color.PURPLE);
+                    Label timeLabel = new Label("Total study time: ");
+                    timeLabel.getStyleClass().add("progress-label");
+                    timeLabel.setStyle("-fx-font-size: 25");
+                    Label timeScore = new Label(minutesToHours(sessionManager.getTotalMinutes() + (priorHours * 60)));
+                    timeScore.getStyleClass().add("progress-label");
+                    timeScore.setStyle("-fx-font-size: 28");
+                    Label loggedMinutesLabel = new Label("Logged study time");
+                    loggedMinutesLabel.getStyleClass().add("progress-secondary-label");
+                    Label loggedMinutes = new Label(minutesToHours(sessionManager.getTotalMinutes()));
+                    loggedMinutes.getStyleClass().add("progress-label");
+                    Label priorMinutesLabel = new Label("Prior imported time");
+                    priorMinutesLabel.getStyleClass().add("progress-secondary-label");
+                    Label priorHoursLabel = new Label(priorHours + "h");
+                    priorHoursLabel.getStyleClass().add("progress-label");
+                    Label weekAverageLabel = new Label("Week average");
+                    weekAverageLabel.getStyleClass().add("progress-secondary-label");
+                    Label weekAverage = new Label(minutesToHours(sessionManager.getWeekMinutes() / 7));
+                    weekAverage.getStyleClass().add("progress-label");
+                    GridPane timeGridPane = new GridPane();
+                    timeGridPane.setHgap(45);
+                    timeGridPane.setVgap(5);
+                    timeGridPane.setPadding(new Insets(2));
+                    timeGridPane.setAlignment(Pos.CENTER);
+                    timeGridPane.setMaxWidth(Double.MAX_VALUE);
+                    timeGridPane.add(timeIcon, 0, 0);
+                    timeGridPane.add(timeLabel, 1, 0);
+                    timeGridPane.add(timeScore, 1, 1);
+                    timeGridPane.add(loggedMinutesLabel, 1, 2);
+                    timeGridPane.add(loggedMinutes, 1, 3);
+                    timeGridPane.add(priorMinutesLabel, 0, 2);
+                    timeGridPane.add(priorHoursLabel, 0, 3);
+                    timeGridPane.add(weekAverageLabel, 2, 2);
+                    timeGridPane.add(weekAverage, 2, 3);
+                    timeGridPane.getStyleClass().add("progress-card");
+
+                    FontIcon varietyIcon = new FontIcon(FontAwesomeSolid.CHART_PIE);
+                    varietyIcon.setIconSize(25);
+                    varietyIcon.setIconColor(Color.GREENYELLOW);
+                    Label varietyLabel = new Label("Variety score");
+                    varietyLabel.getStyleClass().add("progress-label");
+                    Label varietyScore = new Label("" + sessionManager.getVariety());
+                    varietyScore.getStyleClass().add("progress-label");
+                    varietyScore.setStyle("-fx-font-size: 40");
+                    Label varietyDesc = new Label("Last 14 days");
+                    varietyDesc.getStyleClass().add("progress-secondary-label");
+                    GridPane varietyGridPane = new GridPane();
+                    varietyGridPane.setHgap(8);
+                    varietyGridPane.setVgap(10);
+                    varietyGridPane.setPadding(new Insets(2));
+                    varietyGridPane.setMaxWidth(Double.MAX_VALUE);
+                    varietyGridPane.add(varietyIcon, 0, 0);
+                    varietyGridPane.add(varietyLabel, 1, 0);
+                    varietyGridPane.add(varietyScore, 0, 1,2,1);
+                    varietyGridPane.add(varietyDesc, 0, 3,2,1);
+                    varietyGridPane.getStyleClass().add("progress-card");
+
+
+                    FontIcon consistencyIcon = new FontIcon(FontAwesomeSolid.CHART_BAR);
+                    consistencyIcon.setIconSize(25);
+                    consistencyIcon.setIconColor(Color.BLUEVIOLET);
+                    Label consistencyLabel = new Label("Consistency score");
+                    consistencyLabel.getStyleClass().add("progress-label");
+                    Label consistencyScore = new Label("" + sessionManager.getConsistencyBonus());
+                    consistencyScore.getStyleClass().add("progress-label");
+                    consistencyScore.setStyle("-fx-font-size: 40");
+                    Label consistencyDesc = new Label("Based on streaks");
+                    consistencyDesc.getStyleClass().add("progress-secondary-label");
+                    GridPane consistencyGridPane = new GridPane();
+                    consistencyGridPane.setHgap(8);
+                    consistencyGridPane.setVgap(10);
+                    consistencyGridPane.setPadding(new Insets(2));
+                    consistencyGridPane.setMaxWidth(Double.MAX_VALUE);
+                    consistencyGridPane.add(consistencyIcon, 0, 0);
+                    consistencyGridPane.add(consistencyLabel, 1, 0);
+                    consistencyGridPane.add(consistencyScore, 0, 1,2,1);
+                    consistencyGridPane.add(consistencyDesc, 0, 3,2,1);
+                    consistencyGridPane.getStyleClass().add("progress-card");
+
+
+                    FontIcon retentionIcon = new FontIcon(FontAwesomeSolid.STAR);
+                    retentionIcon.setIconSize(25);
+                    retentionIcon.setIconColor(Color.YELLOW);
+                    Label retentionLabel = new Label("Retention score");
+                    retentionLabel.getStyleClass().add("progress-label");
+                    Label retentionScore = new Label("" + sessionManager.getRetention());
+                    retentionScore.getStyleClass().add("progress-label");
+                    retentionScore.setStyle("-fx-font-size: 40");
+                    Label retentionDesc = new Label("Based on minutes studied");
+                    retentionDesc.getStyleClass().add("progress-secondary-label");
+                    GridPane retentionGridPane = new GridPane();
+                    retentionGridPane.setHgap(8);
+                    retentionGridPane.setVgap(10);
+                    retentionGridPane.setPadding(new Insets(2));
+                    retentionGridPane.setMaxWidth(Double.MAX_VALUE);
+                    retentionGridPane.add(retentionIcon, 0, 0);
+                    retentionGridPane.add(retentionLabel, 1, 0);
+                    retentionGridPane.add(retentionScore, 0, 1,2,1);
+                    retentionGridPane.add(retentionDesc, 0, 3,2,1);
+                    retentionGridPane.getStyleClass().add("progress-card");
+
+
+                    HBox statsRow = new HBox(12, timeGridPane, varietyGridPane, consistencyGridPane, retentionGridPane);
+                    statsRow.setSpacing(10);
+                    HBox.setHgrow(timeGridPane, Priority.ALWAYS);
+                    timeGridPane.setMaxWidth(Double.MAX_VALUE);
 
                     HBox pieChartBox = new HBox(xpPieChart, minutesPieChart);
-                    pieChartBox.setSpacing(15);
-                    VBox daddyBox = new VBox(progressBox, totalMinutesLabel,loggedMinutesLabel,priorMinutesLabel, weekMinutesLabel, varietyLabel, consistencyLabel, retentionLabel, categoryProgress);
+                    pieChartBox.setSpacing(25);
+                    pieChartBox.setAlignment(Pos.CENTER);
+                    pieChartBox.getStyleClass().add("progress-card");
+
+                    VBox daddyBox = new VBox(24);
+                    daddyBox.getChildren().addAll(progressBox, statsRow, categoryProgress);
                     daddyBox.setSpacing(10);
+                    daddyBox.setPadding(new Insets(10));
+
 
                     if (sessionManager.getXp() > 0) {
                         daddyBox.getChildren().add(pieChartBox);
                     }
-                    progressTab.setContent(daddyBox);
+                    ScrollPane scroll = new ScrollPane(daddyBox);
+                    scroll.getStyleClass().add("sessions-scroll");
+                    scroll.setFitToWidth(true);
+                    scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+                    progressTab.setContent(scroll);
                 }
 
                 lastXp = sessionManager.getXp();
@@ -482,7 +612,7 @@ public class DashFX extends Application {
             sessionsLabel.setPrefWidth(400);
             sessionsLabel.setStyle("-fx-text-fill: white;" + "-fx-font-size: 30;");
             noSessionsLabel.setStyle("-fx-text-fill: white;" + "-fx-font-size: 20;"
-            +"-fx-border-color: white;" + "-fx-border-width: 1;" + "-fx-padding: 10;");
+                    + "-fx-border-color: white;" + "-fx-border-width: 1;" + "-fx-padding: 10;");
 
 
             logMenuButton.setOnMouseClicked(_ -> showLogMenu());
@@ -514,8 +644,8 @@ public class DashFX extends Application {
             VBox.setMargin(buttonsBox, new Insets(75, 0, 0, 0));
             VBox.setMargin(noSessionsLabel, new Insets(0, 0, 250, 0));
 
-            VBox sessionLayout = new VBox(hbox, sessionsScroll, noSessionsLabel ,buttonsBox);
-            if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()){
+            VBox sessionLayout = new VBox(hbox, sessionsScroll, noSessionsLabel, buttonsBox);
+            if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()) {
                 noSessionsLabel.setVisible(true);
                 noSessionsLabel.setManaged(true);
             }
@@ -531,13 +661,12 @@ public class DashFX extends Application {
             mainMenu.getChildren().add(1, sessionsScroll);
             sessionsScroll.setManaged(false);
             sessionsScroll.setVisible(false);
-            if(Objects.equals(pickedDate, LocalDate.now())){
+            if (Objects.equals(pickedDate, LocalDate.now())) {
                 noSessionsLabel.setText("No sessions logged today yet.");
-            }
-            else{
+            } else {
                 noSessionsLabel.setText("Nothing recorded for this day yet.");
             }
-            if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()){
+            if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()) {
 
                 noSessionsLabel.setManaged(false);
                 noSessionsLabel.setVisible(false);
@@ -626,8 +755,8 @@ public class DashFX extends Application {
             });
 
 
-            logButton.setPrefSize(100,50);
-            closeButton.setPrefSize(100,50);
+            logButton.setPrefSize(100, 50);
+            closeButton.setPrefSize(100, 50);
 
             HBox loggerButtons = new HBox(logButton, closeButton);
             loggerButtons.setAlignment(Pos.CENTER);
@@ -819,61 +948,57 @@ public class DashFX extends Application {
                     row++;
                 }
                 int dayMinutes = sessionManager.getTotalMinutes(month.atDay(i));
-                Label dayLabel = new Label(""+i);
+                Label dayLabel = new Label("" + i);
                 Label dayMinutesLabel = new Label(minutesToHours(dayMinutes));
 
-                if(dayMinutes>0){
-                    if(dayMinutes>29){
-                        if(dayMinutes>59){
+                if (dayMinutes > 0) {
+                    if (dayMinutes > 29) {
+                        if (dayMinutes > 59) {
                             dayLabel.setStyle("-fx-text-fill: lightgreen;");
                             dayMinutesLabel.setStyle("-fx-text-fill: lightgreen;");
-                        }
-                        else{
+                        } else {
                             dayLabel.setStyle("-fx-text-fill: yellow;");
                             dayMinutesLabel.setStyle("-fx-text-fill: yellow;");
                         }
-                    }
-                    else{
+                    } else {
                         dayLabel.setStyle("-fx-text-fill: orange;");
                         dayMinutesLabel.setStyle("-fx-text-fill: orange;");
                     }
-                }
-                else{
+                } else {
                     dayLabel.setStyle("-fx-text-fill: lightgrey;");
                     dayMinutesLabel.setStyle("-fx-text-fill: lightgrey;");
                 }
-                VBox label = new VBox (dayLabel, dayMinutesLabel);
+                VBox label = new VBox(dayLabel, dayMinutesLabel);
                 label.getStyleClass().add("day-label");
                 label.setAlignment(Pos.CENTER);
 
 
+                label.setPrefSize(75, 75);
 
-                label.setPrefSize(75,75);
-
-                if(Objects.equals(pickedDate, month.atDay(i))){
+                if (Objects.equals(pickedDate, month.atDay(i))) {
                     label.getStyleClass().add("selected-day-label");
                     selectedDateLabel = label;
                 }
 
                 int finalI = i;
                 label.setOnMouseClicked(_ -> {
-                    if(selectedDateLabel!=label){
+                    if (selectedDateLabel != label) {
                         selectedDateLabel.getStyleClass().clear();
                         selectedDateLabel.getStyleClass().add("day-label");
-                    selectedDateLabel = label;
-                    selectedDateLabel.getStyleClass().clear();
-                    selectedDateLabel.getStyleClass().add("selected-day-label");
+                        selectedDateLabel = label;
+                        selectedDateLabel.getStyleClass().clear();
+                        selectedDateLabel.getStyleClass().add("selected-day-label");
 
-                    pickedDate = month.atDay(finalI);
-                    sessionManager.makeDayNotNull(pickedDate);
+                        pickedDate = month.atDay(finalI);
+                        sessionManager.makeDayNotNull(pickedDate);
 
-                    if(sessionsTab.getCenter()==mainMenu){
-                        refreshMainMenu();
-                    }
+                        if (sessionsTab.getCenter() == mainMenu) {
+                            refreshMainMenu();
+                        }
 
-                    l.setText("Date : " + pickedDate);
-                    logDateLabel.setText("Logging session for " + pickedDate);
-                    newDateLabel.setText("New Date: " + pickedDate);
+                        l.setText("Date : " + pickedDate);
+                        logDateLabel.setText("Logging session for " + pickedDate);
+                        newDateLabel.setText("New Date: " + pickedDate);
 
                     }
                 });
@@ -1097,7 +1222,6 @@ public class DashFX extends Application {
             cancelButton.getStyleClass().add("default-box");
 
 
-
             grindingHoursLabel.getStyleClass().add("new-manager-label");
             speakingHoursLabel.getStyleClass().add("new-manager-label");
             listeningHoursLabel.getStyleClass().add("new-manager-label");
@@ -1271,6 +1395,6 @@ public class DashFX extends Application {
 
     //EVERYTHING JUST BECOMES ... WHEN THE PAGE ISN'T BIG ENOUGH
     //IF YOU HOVER OVER A BOX WHILE THE INVALID FLASH IS STILL HAPPENING IT LOOKS WEIRD
-    //EDITING SESSIONS DOESN'T UPDATE XP PROPERLY
+    //EDITING SESSIONS DOESN'T UPDATE XP CORRECTLY
     //FIND BEST BALANCE FOR XP, MAKE DELETION MORE ACCURATE
 }
