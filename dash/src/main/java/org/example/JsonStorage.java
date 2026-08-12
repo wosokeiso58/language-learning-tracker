@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Files;
+
 
 public class JsonStorage {
 
@@ -17,6 +19,14 @@ public class JsonStorage {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        try {
+            if (!file.exists()) {
+                Files.writeString(file.toPath(), "{\"sessionManagers\":[]}");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create sessionManagers.json", e);
+        }
     }
 
     public static void save(List<SessionManager> managers) throws IOException {
@@ -58,7 +68,7 @@ public class JsonStorage {
                     sessionManagerData.startWritingHours());
 
             for(Session session : sessionManagerData.sessions()){
-                sessionManager.loadSession(session.getMinutes(),session.getActivityType(),session.getDate());
+                sessionManager.loadSession(session.getMinutes(),session.getActivityType(),session.getDate(), session.getVariety());
             }
             sessionManagers.add(sessionManager);
         }

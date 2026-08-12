@@ -60,7 +60,7 @@ public class DashFX extends Application {
         root.setStyle("-fx-background-color: #141414;" + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 12, 0, 0, 2);");
 
         root.setCenter(menuPage.getMenuRoot());
-        Scene scene = new Scene(root, 540, 460);
+        Scene scene = new Scene(root, 1366, 768);
         scene.getStylesheets().add(
                 Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm()
         );
@@ -128,6 +128,9 @@ public class DashFX extends Application {
         percentageLabel.setPrefWidth(50);
         percentageLabel.setMinWidth(50);
         percentageLabel.setMaxWidth(50);
+        if(manager.getLevel()==Level.C2){
+            percentageLabel.setText("MAX");
+        }
         VBox labelBox = new VBox(symbolLabel, percentageLabel);
 
         StackPane stack = new StackPane(ring, background, labelBox);
@@ -159,8 +162,6 @@ public class DashFX extends Application {
         VBox selectedDateLabel;
         YearMonth month = YearMonth.now();
         Label newDateLabel = new Label("New Date: " + pickedDate);
-        TextArea logOutput = new TextArea();
-        TextArea editOutput = new TextArea();
         ComboBox<ActivityType> logActivityBox = new ComboBox<>();
         TextField logMinutesInput = new TextField();
         ComboBox<ActivityType> editActivityBox = new ComboBox<>();
@@ -190,11 +191,18 @@ public class DashFX extends Application {
 
 
             progressTab.setOnSelectionChanged(_ -> {
-                if (sessionManager.getXp() != lastXp) {
-                    Label xpLabel = new Label(sessionManager.getXp() + "/" + sessionManager.getCeiling() + " XP");
-                    xpLabel.getStyleClass().add("progress-secondary-label");
+                if ((sessionManager.getXp() != lastXp) && (sessionManager.getXp() > 0)) {
                     Label totalProgressLabel = new Label(sessionManager.getTotalProgress() + "% of the way to " + sessionManager.getNextLevel(sessionManager.getLevel()));
                     totalProgressLabel.getStyleClass().add("progress-secondary-label");
+                    if(sessionManager.getLevel()==Level.C2){
+                        totalProgressLabel.setManaged(false);
+                        totalProgressLabel.setVisible(false);
+                    }
+                    Label xpLabel = new Label(sessionManager.getXp() + "/" + sessionManager.getCeiling() + " XP");
+                    xpLabel.getStyleClass().add("progress-secondary-label");
+                    if(sessionManager.getLevel()==Level.C2){
+                        xpLabel.setText(sessionManager.getXp() + " XP");
+                    }
                     Label levelLabel = new Label(sessionManager.getLevel().toString());
                     levelLabel.getStyleClass().add("progress-label");
                     ProgressBar totalProgressBar = new ProgressBar();
@@ -227,12 +235,20 @@ public class DashFX extends Application {
                         HBox.setHgrow(categoryProgressBar, Priority.ALWAYS);
                         categoryProgressBar.setPrefHeight(24);
                         categoryProgressBar.setMinHeight(24);
+                        if(sessionManager.getLevel(activityCategory)==Level.C2){
+                            categoryProgressLabel.setManaged(false);
+                            categoryProgressLabel.setVisible(false);
+                        }
                         BorderPane categoryXpRow = new BorderPane();
                         categoryXpRow.setLeft(categoryLevelLabel);
                         categoryXpRow.setCenter(categoryXpLabel);
                         categoryXpRow.setRight(categoryNextLevelLabel);
                         Label currentCategoryLevelLabel = new Label("Current " + activityCategory + " level: " + sessionManager.getLevel());
                         currentCategoryLevelLabel.getStyleClass().add("progress-label");
+                        if(sessionManager.getLevel(activityCategory)==Level.C2){
+                            currentCategoryLevelLabel.setText("Current " + activityCategory + " level: MAX (C2)");
+                            categoryXpLabel.setText(sessionManager.getXp(activityCategory) + " XP");
+                        }
                         VBox categoryProgressBox = new VBox(currentCategoryLevelLabel, categoryProgressLabel, categoryProgressBar, categoryXpRow);
                         categoryProgressBox.getStyleClass().add("progress-card");
                         categoryProgressBox.setAlignment(Pos.CENTER);
@@ -253,8 +269,8 @@ public class DashFX extends Application {
                     xpPieChart.setLegendVisible(false);
                     xpPieChart.setLabelsVisible(true);
                     xpPieChart.setPrefSize(500, 500);
-                    xpPieChart.setMaxSize(500,500);
-                    xpPieChart.setMinSize(500,500);
+                    xpPieChart.setMaxSize(500, 500);
+                    xpPieChart.setMinSize(500, 500);
 
                     ObservableList<Data> minutesChartData = FXCollections.observableArrayList();
                     for (ActivityType activityType : ActivityType.values()) {
@@ -268,8 +284,8 @@ public class DashFX extends Application {
                     minutesPieChart.setLegendVisible(false);
                     minutesPieChart.setLabelsVisible(true);
                     minutesPieChart.setPrefSize(500, 500);
-                    minutesPieChart.setMaxSize(500,500);
-                    minutesPieChart.setMinSize(500,500);
+                    minutesPieChart.setMaxSize(500, 500);
+                    minutesPieChart.setMinSize(500, 500);
 
 
                     totalProgressBar.setMaxWidth(Double.MAX_VALUE);
@@ -283,6 +299,9 @@ public class DashFX extends Application {
                     xpRow.setRight(nextLevelLabel);
 
                     Label currentLevelLabel = new Label("Current level: " + sessionManager.getLevel());
+                    if(sessionManager.getLevel()==Level.C2){
+                        currentLevelLabel.setText("Current level: MAX (C2)");
+                    }
                     currentLevelLabel.getStyleClass().add("progress-label");
                     currentLevelLabel.setStyle("-fx-font-size: 32");
                     VBox progressBox = new VBox(currentLevelLabel, totalProgressLabel, totalProgressBar, xpRow);
@@ -296,12 +315,12 @@ public class DashFX extends Application {
                     Label timeLabel = new Label("Total study time: ");
                     timeLabel.getStyleClass().add("progress-label");
                     timeLabel.setStyle("-fx-font-size: 25");
-                    Label timeScore = new Label(minutesToHours(sessionManager.getTotalMinutes() + (priorHours * 60)));
+                    Label timeScore = new Label(minutesToHours(sessionManager.getTotalSessionMinutes() + (priorHours * 60)));
                     timeScore.getStyleClass().add("progress-label");
                     timeScore.setStyle("-fx-font-size: 28");
                     Label loggedMinutesLabel = new Label("Logged study time");
                     loggedMinutesLabel.getStyleClass().add("progress-secondary-label");
-                    Label loggedMinutes = new Label(minutesToHours(sessionManager.getTotalMinutes()));
+                    Label loggedMinutes = new Label(minutesToHours(sessionManager.getTotalSessionMinutes()));
                     loggedMinutes.getStyleClass().add("progress-label");
                     Label priorMinutesLabel = new Label("Prior imported time");
                     priorMinutesLabel.getStyleClass().add("progress-secondary-label");
@@ -345,8 +364,8 @@ public class DashFX extends Application {
                     varietyGridPane.setMaxWidth(Double.MAX_VALUE);
                     varietyGridPane.add(varietyIcon, 0, 0);
                     varietyGridPane.add(varietyLabel, 1, 0);
-                    varietyGridPane.add(varietyScore, 0, 1,2,1);
-                    varietyGridPane.add(varietyDesc, 0, 3,2,1);
+                    varietyGridPane.add(varietyScore, 0, 1, 2, 1);
+                    varietyGridPane.add(varietyDesc, 0, 3, 2, 1);
                     varietyGridPane.getStyleClass().add("progress-card");
 
 
@@ -367,8 +386,8 @@ public class DashFX extends Application {
                     consistencyGridPane.setMaxWidth(Double.MAX_VALUE);
                     consistencyGridPane.add(consistencyIcon, 0, 0);
                     consistencyGridPane.add(consistencyLabel, 1, 0);
-                    consistencyGridPane.add(consistencyScore, 0, 1,2,1);
-                    consistencyGridPane.add(consistencyDesc, 0, 3,2,1);
+                    consistencyGridPane.add(consistencyScore, 0, 1, 2, 1);
+                    consistencyGridPane.add(consistencyDesc, 0, 3, 2, 1);
                     consistencyGridPane.getStyleClass().add("progress-card");
 
 
@@ -389,8 +408,8 @@ public class DashFX extends Application {
                     retentionGridPane.setMaxWidth(Double.MAX_VALUE);
                     retentionGridPane.add(retentionIcon, 0, 0);
                     retentionGridPane.add(retentionLabel, 1, 0);
-                    retentionGridPane.add(retentionScore, 0, 1,2,1);
-                    retentionGridPane.add(retentionDesc, 0, 3,2,1);
+                    retentionGridPane.add(retentionScore, 0, 1, 2, 1);
+                    retentionGridPane.add(retentionDesc, 0, 3, 2, 1);
                     retentionGridPane.getStyleClass().add("progress-card");
 
 
@@ -399,7 +418,10 @@ public class DashFX extends Application {
                     HBox.setHgrow(timeGridPane, Priority.ALWAYS);
                     timeGridPane.setMaxWidth(Double.MAX_VALUE);
 
-                    HBox pieChartBox = new HBox(xpPieChart, minutesPieChart);
+                    HBox pieChartBox = new HBox(xpPieChart);
+                    if (sessionManager.getTotalSessionMinutes() > 0) {
+                        pieChartBox.getChildren().add(minutesPieChart);
+                    }
                     pieChartBox.setSpacing(25);
                     pieChartBox.setAlignment(Pos.CENTER);
                     pieChartBox.getStyleClass().add("progress-card");
@@ -419,12 +441,20 @@ public class DashFX extends Application {
                     scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
                     progressTab.setContent(scroll);
+                } else if(sessionManager.getXp() <= 0){
+                    Label noXpLabel = new Label("Log a session to see your progress!");
+                    noXpLabel.setStyle("-fx-text-fill: white;" + "-fx-font-size: 50;"
+                            + "-fx-border-color: white;" + "-fx-border-width: 1;" + "-fx-padding: 10;");
+
+                    progressTab.setContent(noXpLabel);
                 }
 
                 lastXp = sessionManager.getXp();
             });
 
-            calendarTab.setContent(new HBox(calendar, sessionsTab));
+            HBox hBox = new HBox(calendar, sessionsTab);
+            hBox.setSpacing(40);
+            calendarTab.setContent(hBox);
             tabPane.getTabs().addAll(calendarTab, progressTab);
             tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
             showMainMenu();
@@ -476,7 +506,9 @@ public class DashFX extends Application {
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
             scrollPane.setFitToWidth(true);
-            scrollPane.setPrefHeight(550);
+            scrollPane.setPrefHeight(311);
+            scrollPane.setMinHeight(311);
+            scrollPane.setMaxHeight(311);
             scrollPane.getStyleClass().add("sessions-scroll");
             return scrollPane;
         }
@@ -521,10 +553,14 @@ public class DashFX extends Application {
             streakIcon.setMaxWidth(40);
             Label streakLabel = new Label();
             int streak = sessionManager.getActiveStreak();
-            if (streak >= 0) {
-                streakLabel.setText(String.valueOf(streak));
+            if ((!Objects.equals(sessionManager.getLastStreakUpdate(), LocalDate.now()) || (sessionManager.getTotalMinutes(LocalDate.now()) <= 0))) {
+                streakLabel.setText("0");
             } else {
-                streakLabel.setText("Streak: -" + sessionManager.getInactiveStreak());
+                if (streak >= 0) {
+                    streakLabel.setText(String.valueOf(streak));
+                } else {
+                    streakLabel.setText("Streak: -" + sessionManager.getInactiveStreak());
+                }
             }
             Label daysLabel = new Label("days");
             if (streak == 1) {
@@ -594,7 +630,7 @@ public class DashFX extends Application {
             dashBoardBox.setStyle("-fx-background-color: #151A22;" +
                     "-fx-background-radius: 15;" +
                     "-fx-padding: 25;");
-
+            dashBoardBox.setMinWidth(1275);
             dashBoardBox.setMaxWidth(Double.MAX_VALUE);
             return dashBoardBox;
         }
@@ -609,7 +645,9 @@ public class DashFX extends Application {
             deleteButton.setIconSize(30);
             deleteButton.setIconColor(Color.GREY);
             Label sessionsLabel = new Label("Sessions:");
-            sessionsLabel.setPrefWidth(400);
+            sessionsLabel.setPrefWidth(120);
+            sessionsLabel.setMaxWidth(120);
+            sessionsLabel.setMinWidth(120);
             sessionsLabel.setStyle("-fx-text-fill: white;" + "-fx-font-size: 30;");
             noSessionsLabel.setStyle("-fx-text-fill: white;" + "-fx-font-size: 20;"
                     + "-fx-border-color: white;" + "-fx-border-width: 1;" + "-fx-padding: 10;");
@@ -638,11 +676,10 @@ public class DashFX extends Application {
 
             noSessionsLabel.setManaged(false);
             noSessionsLabel.setVisible(false);
+
             HBox hbox = new HBox(sessionsLabel, deleteButton);
             hbox.setSpacing(500);
-            VBox.setVgrow(sessionsScroll, Priority.ALWAYS);
-            VBox.setMargin(buttonsBox, new Insets(75, 0, 0, 0));
-            VBox.setMargin(noSessionsLabel, new Insets(0, 0, 250, 0));
+            VBox.setMargin(noSessionsLabel, new Insets(0, 0, 259, 0));
 
             VBox sessionLayout = new VBox(hbox, sessionsScroll, noSessionsLabel, buttonsBox);
             if (!Objects.requireNonNull(sessionManager).getSessionsByDate(pickedDate).isEmpty()) {
@@ -689,17 +726,12 @@ public class DashFX extends Application {
             activityTypeLabel.setStyle("-fx-text-fill: #fadaff;" + "-fx-font-size: 25;");
             Button logButton = new Button("Log");
             logButton.getStyleClass().add("log-button");
-            logOutput.getStyleClass().add("default-box");
 
-
-            logOutput.setEditable(false);
 
             logDateLabel.setText("Logging session for " + pickedDate);
             logActivityBox.setValue(null);
             logMinutesInput.setText("");
             logMinutesInput.getStyleClass().add("default-box");
-            logOutput.setText("");
-            logOutput.setEditable(false);
 
 
             closeButton.setOnMouseClicked(_ -> showMainMenu());
@@ -707,48 +739,37 @@ public class DashFX extends Application {
 
             logButton.setOnMouseClicked(_ -> {
                 try {
-                    if (pickedDate == null) {
-                        logOutput.setText("No date selected!\nSelect a date!");
-                    } else {
-                        if (!(Objects.equals(logMinutesInput.getText(), "") || (logActivityBox.getSelectionModel().getSelectedItem() == null))) {
-                            StringBuilder stringBuilder = new StringBuilder();
-                            int minutes = Integer.parseInt(logMinutesInput.getText());
-                            ActivityType activityType = logActivityBox.getSelectionModel().getSelectedItem();
-                            int xp = sessionManager.logSession(minutes, activityType, pickedDate);
-                            double variety = sessionManager.getVariety();
-                            if (variety == 1.15) {
-                                stringBuilder.append("You have a healthy balance of activities in the last 14 days. Well done! Balance XP multiplier: x1.25\n");
-                            } else if (variety == 1) {
-                                stringBuilder.append("You have a solid balance of activities in the last 14 days. Balance XP multiplier: x1.00\n");
-                            } else if (variety == 0.875) {
-                                stringBuilder.append("You have a weak balance of activities in the last 14 days. Balance XP multiplier: x0.875\n");
-                            } else {
-                                stringBuilder.append("Error\n");
-                            }
-                            for (ActivityCategory activityCategory : ActivityCategory.values()) {
-                                stringBuilder.append(activityCategory.toString().substring(0, 1).toUpperCase()).append(activityCategory.toString().substring(1)).append(" XP gained: ").append(sessionManager.getXpJustCalculated(activityCategory)).append("\n");
-                            }
-                            stringBuilder.append("Total gained XP: ").append(xp);
-                            logOutput.setText(stringBuilder.toString());
+
+                    if (!(Objects.equals(logMinutesInput.getText(), "") || (logActivityBox.getSelectionModel().getSelectedItem() == null))) {
+                        int minutes = Integer.parseInt(logMinutesInput.getText());
+                        ActivityType activityType = logActivityBox.getSelectionModel().getSelectedItem();
+                        if ((0 < minutes) && (minutes < 6000)) {
+                            sessionManager.logSession(minutes, activityType, pickedDate);
                             updateDashboard();
                             tabSave();
                             showMainMenu();
                         } else {
-                            StringBuilder stringBuilder = new StringBuilder();
+                            flashInvalid(logMinutesInput);
+                            logMinutesInput.setText("");
+                        }
+                    } else {
 
-                            if (Objects.equals(logMinutesInput.getText(), "")) {
-                                flashInvalid(logMinutesInput);
-                                stringBuilder.append("No minutes entered!\nEnter the minutes!\n\n");
-                            }
-                            if (logActivityBox.getSelectionModel().getSelectedItem() == null) {
-                                stringBuilder.append("No activity selected!\nSelect an activity!");
-                                flashInvalid(logActivityBox);
-                            }
-                            logOutput.setText(stringBuilder.toString());
+                        if (Objects.equals(logMinutesInput.getText(), "")) {
+                            flashInvalid(logMinutesInput);
+                            logMinutesInput.setText("");
+
+                        }
+                        if (logActivityBox.getSelectionModel().getSelectedItem() == null) {
+                            flashInvalid(logActivityBox);
+                            logMinutesInput.setText("");
+
                         }
                     }
-                } catch (NumberFormatException ex) {
-                    logOutput.setText("Enter valid minutes.");
+
+                } catch (NumberFormatException _) {
+                    flashInvalid(logMinutesInput);
+                    logMinutesInput.setText("");
+
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -774,7 +795,6 @@ public class DashFX extends Application {
             logActivityBox.setValue(null);
             logActivityBox.setPromptText("Select an activity");
             logMinutesInput.setText("");
-            logOutput.setText("");
 
 
         }
@@ -790,7 +810,6 @@ public class DashFX extends Application {
             editActivityBox.getItems().addAll(ActivityType.values());
             editActivityBox.getStyleClass().add("default-box");
 
-            editOutput.setEditable(false);
             Button saveButton = new Button("Save");
 
 
@@ -799,32 +818,31 @@ public class DashFX extends Application {
 
             saveButton.setOnMouseClicked(_ -> {
                 try {
-                    if (pickedDate == null) {
-                        editOutput.setText("No date selected!\nSelect a date!");
-                    } else {
+
                         if (!(Objects.equals(editMinutesInput.getText(), "") || (editActivityBox.getSelectionModel().getSelectedItem() == null))) {
                             int minutes = Integer.parseInt(editMinutesInput.getText());
-                            ActivityType activityType = editActivityBox.getSelectionModel().getSelectedItem();
-                            sessionManager.editSession(selectedSession, pickedDate, activityType, minutes);
-                            editOutput.setText("Session updated successfully.");
-                            updateDashboard();
-                            tabSave();
-                            showMainMenu();
+                            if ((0 < minutes) && (minutes < 6000)) {
+                                ActivityType activityType = editActivityBox.getSelectionModel().getSelectedItem();
+                                sessionManager.editSession(selectedSession, pickedDate, activityType, minutes);
+                                updateDashboard();
+                                tabSave();
+                                showMainMenu();
+                            } else {
+                                flashInvalid(editMinutesInput);
+                                editMinutesInput.setText("");
+                            }
                         } else {
-                            StringBuilder stringBuilder = new StringBuilder();
 
                             if (Objects.equals(editMinutesInput.getText(), "")) {
-                                stringBuilder.append("No minutes entered!\nEnter the minutes!\n\n");
                                 flashInvalid(editMinutesInput);
                             }
-                            if (editActivityBox.getSelectionModel().getSelectedItem() == null) {
-                                stringBuilder.append("No activity selected!\nSelect an activity!");
-                            }
-                            editOutput.setText(stringBuilder.toString());
+
                         }
-                    }
-                } catch (NumberFormatException ex) {
-                    editOutput.setText("Enter valid minutes.");
+
+                } catch (NumberFormatException _) {
+                    flashInvalid(editMinutesInput);
+                    editMinutesInput.setText("");
+
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -848,12 +866,10 @@ public class DashFX extends Application {
         }
 
         public void refreshEditMenu() {
-            editOutput.setText("");
 
             if (selectedSession != null) {
                 editActivityBox.setValue(selectedSession.getActivityType());
                 editMinutesInput.setText(String.valueOf(selectedSession.getMinutes()));
-                editOutput.setText("");
             } else {
                 editActivityBox.getSelectionModel().clearSelection();
                 logActivityBox.setValue(null);
@@ -864,7 +880,9 @@ public class DashFX extends Application {
         public VBox buildCalendar() {
 
             l.setStyle("-fx-text-fill: white;" + "-fx-font-size: 30;");
-
+            l.setPrefWidth(280);
+            l.setMinWidth(280);
+            l.setMaxWidth(280);
             month = YearMonth.now();
 
             monthLabel.setPrefWidth(131);
@@ -875,13 +893,20 @@ public class DashFX extends Application {
             FontIcon rightLabel = new FontIcon("fas-arrow-right");
             rightLabel.setIconSize(22);
             rightLabel.setIconColor(Paint.valueOf("#A57CFF"));
+            rightLabel.getStyleClass().add("arrow");
             FontIcon leftLabel = new FontIcon("fas-arrow-left");
+            leftLabel.getStyleClass().add("arrow");
             leftLabel.setIconSize(22);
             leftLabel.setIconColor(Paint.valueOf("#A57CFF"));
+
 
             HBox hbox = new HBox(leftLabel, monthLabel, rightLabel);
             hbox.setAlignment(Pos.CENTER);
             hbox.setSpacing(15);
+
+            HBox hBox = new HBox(l, hbox);
+            hBox.setAlignment(Pos.CENTER);
+            hBox.setSpacing(35);
 
             rightLabel.setOnMouseClicked(_ -> {
                 month = month.plusMonths(1);
@@ -896,7 +921,12 @@ public class DashFX extends Application {
 
             GridPane calendarPane = buildCalendarMonth();
 
-            return new VBox(hbox, calendarPane, l);
+            VBox vBox = new VBox(hBox, calendarPane);
+            vBox.setMaxWidth(600);
+            vBox.setMinWidth(600);
+            vBox.setPrefWidth(600);
+
+            return vBox;
         }
 
         public GridPane buildCalendarMonth() {
@@ -944,7 +974,7 @@ public class DashFX extends Application {
             for (int i = 1; i <= days; i++) {
                 column++;
                 if (column == 7) {
-                    column = 0;
+                        column = 0;
                     row++;
                 }
                 int dayMinutes = sessionManager.getTotalMinutes(month.atDay(i));
@@ -973,7 +1003,9 @@ public class DashFX extends Application {
                 label.setAlignment(Pos.CENTER);
 
 
-                label.setPrefSize(75, 75);
+                label.setPrefSize(60, 60);
+                label.setMaxSize(60, 60);
+                label.setMinSize(60, 60);
 
                 if (Objects.equals(pickedDate, month.atDay(i))) {
                     label.getStyleClass().add("selected-day-label");
@@ -1200,8 +1232,13 @@ public class DashFX extends Application {
         public NewLanguagePage() {
             Button createButton = new Button("Create");
             createButton.getStyleClass().add("default-box");
-
+            createButton.setPrefSize(75, 40);
+            createButton.setMaxSize(75, 40);
+            createButton.setMinSize(75, 40);
             Button cancelButton = new Button("Cancel");
+            cancelButton.setPrefSize(75, 40);
+            cancelButton.setMaxSize(75, 40);
+            cancelButton.setMinSize(75, 40);
 
             Label grindingHoursLabel = new Label("🎮 Grinding:");
 
@@ -1213,8 +1250,12 @@ public class DashFX extends Application {
 
             Label writingHoursLabel = new Label("✏ Writing:");
 
-            Label newSessionManagerLabel = new Label("New Session Manager");
+            Label newSessionManagerLabel = new Label("New Language");
             Label languageLabel = new Label("🌐 Language:");
+            languageLabel.setMinWidth(150);
+            languageLabel.setPrefWidth(150);
+            languageLabel.setMaxWidth(150);
+
             newSessionManagerLabel.getStyleClass().add("new-manager-label");
             languageLabel.getStyleClass().add("new-manager-label");
             newSessionManagerLabel.setStyle("-fx-font-size: 40");
@@ -1248,26 +1289,42 @@ public class DashFX extends Application {
 
             GridPane grid = new GridPane();
             grid.add(newSessionManagerLabel, 0, 0, 5, 1);
-            grid.add(languageLabel, 1, 1, 1, 1);
+            grid.add(languageLabel, 1, 1, 2, 1);
             grid.add(languageBox, 4, 1, 1, 1);
-            grid.add(grindingHoursLabel, 1, 3, 1, 1);
+            grid.add(grindingHoursLabel, 1, 3, 2, 1);
             grid.add(grindingHoursInput, 4, 3, 1, 1);
-            grid.add(speakingHoursLabel, 1, 4, 1, 1);
+            grid.add(speakingHoursLabel, 1, 4, 2, 1);
             grid.add(speakingHoursInput, 4, 4, 1, 1);
-            grid.add(listeningHoursLabel, 1, 5, 1, 1);
+            grid.add(listeningHoursLabel, 1, 5, 2, 1);
             grid.add(listeningHoursInput, 4, 5, 1, 1);
-            grid.add(readingHoursLabel, 1, 6, 1, 1);
+            grid.add(readingHoursLabel, 1, 6, 2, 1);
             grid.add(readingHoursInput, 4, 6, 1, 1);
-            grid.add(writingHoursLabel, 1, 7, 1, 1);
+            grid.add(writingHoursLabel, 1, 7, 2, 1);
             grid.add(writingHoursInput, 4, 7, 1, 1);
             grid.add(createButton, 2, 8, 1, 1);
             grid.add(cancelButton, 3, 8, 1, 1);
 
+            ColumnConstraints c1 = new ColumnConstraints();
+            ColumnConstraints c2 = new ColumnConstraints();
+            ColumnConstraints c3 = new ColumnConstraints();
+            ColumnConstraints c4 = new ColumnConstraints();
+            ColumnConstraints c5 = new ColumnConstraints();
+
+            c1.setPercentWidth(10);
+            c2.setPercentWidth(10);
+            c3.setPercentWidth(30);
+            c4.setPercentWidth(30);
+            c5.setPercentWidth(20);
+
+
+            grid.getColumnConstraints().addAll(c1, c2, c3);
 
             grid.setHgap(50);
             grid.setVgap(20);
+            grid.setMaxWidth(Double.MAX_VALUE);
+            grid.setMaxHeight(Double.MAX_VALUE);
             grid.setPadding(new Insets(10));
-            grid.setStyle("-fx-background-color: #384c67;");
+            grid.setStyle("-fx-background-color: rgba(49,57,89,0.75);");
 
             newLanguageRoot = grid;
 
@@ -1281,6 +1338,7 @@ public class DashFX extends Application {
 
                 } catch (NumberFormatException ex) {
                     flashInvalid(grindingHoursInput);
+                    grindingHoursInput.setText("");
                     grindingHoursInput.setPromptText("Input invalid");
                 }
 
@@ -1290,6 +1348,7 @@ public class DashFX extends Application {
 
                 } catch (NumberFormatException ex) {
                     flashInvalid(speakingHoursInput);
+                    speakingHoursInput.setText("");
                     speakingHoursInput.setPromptText("Input invalid");
                 }
                 try {
@@ -1298,6 +1357,7 @@ public class DashFX extends Application {
 
                 } catch (NumberFormatException ex) {
                     flashInvalid(listeningHoursInput);
+                    listeningHoursInput.setText("");
                     listeningHoursInput.setPromptText("Input invalid");
                 }
                 try {
@@ -1306,6 +1366,7 @@ public class DashFX extends Application {
 
                 } catch (NumberFormatException ex) {
                     flashInvalid(readingHoursInput);
+                    readingHoursInput.setText("");
                     readingHoursInput.setPromptText("Input invalid");
                 }
 
@@ -1315,6 +1376,7 @@ public class DashFX extends Application {
 
                 } catch (NumberFormatException ex) {
                     flashInvalid(writingHoursInput);
+                    writingHoursInput.setText("");
                     writingHoursInput.setPromptText("Input invalid");
                 }
 
@@ -1331,14 +1393,46 @@ public class DashFX extends Application {
                         int readingHours = Integer.parseInt(readingHoursInput.getText());
 
                         int writingHours = Integer.parseInt(writingHoursInput.getText());
+                        int invalidCount = 0;
+                        if((grindingHours<0||(grindingHours>9999))){
+                            flashInvalid(grindingHoursInput);
+                            grindingHoursInput.setText("");
+                            grindingHoursInput.setPromptText("Input invalid");
+                            invalidCount++;
+                        }
+                        if((speakingHours<0||(speakingHours>9999))){
+                            flashInvalid(speakingHoursInput);
+                            speakingHoursInput.setText("");
+                            speakingHoursInput.setPromptText("Input invalid");
+                            invalidCount++;
 
+                        }
+                        if((listeningHours<0||(listeningHours>9999))){
+                            flashInvalid(listeningHoursInput);
+                            listeningHoursInput.setText("");
+                            listeningHoursInput.setPromptText("Input invalid");
+                            invalidCount++;
+
+                        }
+                        if((writingHours<0||(writingHours>9999))){
+                            flashInvalid(writingHoursInput);
+                            writingHoursInput.setText("");
+                            writingHoursInput.setPromptText("Input invalid");
+                            invalidCount++;
+
+                        }
+                        if((readingHours<0||(readingHours>9999))){
+                            flashInvalid(readingHoursInput);
+                            readingHoursInput.setText("");
+                            readingHoursInput.setPromptText("Input invalid");
+                            invalidCount++;
+
+                        }
+                        if(invalidCount == 0){
                         sessionManagerList.add(new SessionManager(languageBox.getSelectionModel().getSelectedItem(), 0, 0, LocalDate.now().minusDays(1), grindingHours, speakingHours, readingHours, listeningHours, writingHours));
                         JsonStorage.save(sessionManagerList);
-
-                        grindingHoursLabel.getStyleClass().add("new-manager-label");
-                        grindingHoursInput.setPromptText("Enter hours");
-
-                        root.setCenter(menuPage.getMenuRoot());
+                            root.setCenter(menuPage.getMenuRoot());
+                        }
 
 
                     } else {
@@ -1368,13 +1462,9 @@ public class DashFX extends Application {
             languageBox.getSelectionModel().clearSelection();
             languageBox.setValue(null);
             Platform.runLater(() -> {
-                languageBox.setPromptText("");
+                    languageBox.setPromptText("");
                 languageBox.setPromptText("Select a language");
             });
-            System.out.println(languageBox.getSelectionModel().getSelectedItem());
-            System.out.println(languageBox.getPromptText());
-            System.out.println(languageBox.getButtonCell());
-            System.out.println(languageBox.getCellFactory());
 
             grindingHoursInput.setText("");
             readingHoursInput.setText("");
@@ -1390,11 +1480,4 @@ public class DashFX extends Application {
         }
     }
 
-
-    //BUG NOTES
-
-    //EVERYTHING JUST BECOMES ... WHEN THE PAGE ISN'T BIG ENOUGH
-    //IF YOU HOVER OVER A BOX WHILE THE INVALID FLASH IS STILL HAPPENING IT LOOKS WEIRD
-    //EDITING SESSIONS DOESN'T UPDATE XP CORRECTLY
-    //FIND BEST BALANCE FOR XP, MAKE DELETION MORE ACCURATE
 }

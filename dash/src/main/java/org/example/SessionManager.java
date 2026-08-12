@@ -29,11 +29,6 @@ public class SessionManager {
     private final int startWritingMinutes;
     private final int startReadingMinutes;
 
-    private int currentSpeakingXp;
-    private int currentListeningXp;
-    private int currentGrindingXp;
-    private int currentWritingXp;
-    private int currentReadingXp;
 
     LocalDate today = LocalDate.now();
 
@@ -62,20 +57,32 @@ public class SessionManager {
         writingXp = writingHours * 60 * 150;
     }
 
-    public int logSession(int minutes, ActivityType activityType, LocalDate date) {
-        int xp = addSession(allocateXp(minutes, activityType, date));
+    public void logSession(int minutes, ActivityType activityType, LocalDate date) {
+        System.out.println("Before Log:");
+        System.out.println("Grinding XP: " +  grindingXp);
+        System.out.println("Listening XP: " +  listeningXp);
+        System.out.println("Speaking XP: " +  speakingXp);
+        System.out.println("Writing XP: " +  writingXp);
+        System.out.println("Reading XP: " +  readingXp + "\n");
+
+        addSession(allocateXp(minutes, activityType, date, getVariety()));
         if (lastStreakUpdate.isBefore(today)) {
             dailyUpdate();
         }
-        return xp;
+
+        System.out.println("After Log:");
+        System.out.println("Grinding XP: " +  grindingXp);
+        System.out.println("Listening XP: " +  listeningXp);
+        System.out.println("Speaking XP: " +  speakingXp);
+        System.out.println("Writing XP: " +  writingXp);
+        System.out.println("Reading XP: " +  readingXp + "\n");
     }
 
-    public void loadSession(int minutes, ActivityType activityType, LocalDate date) {
-        addSession(allocateXp(minutes, activityType, date));
-
+    public void loadSession(int minutes, ActivityType activityType, LocalDate date, double variety) {
+        addSession(allocateXp(minutes, activityType, date, variety));
     }
 
-    public int addSession(Session session) {
+    public void addSession(Session session) {
 
         if (this.sessionsByDate.containsKey(session.getDate())) {
             this.sessionsByDate.get(session.getDate()).add(session);
@@ -84,15 +91,13 @@ public class SessionManager {
             this.sessionsByDate.get(session.getDate()).add(session);
         }
 
-        return session.getXp();
     }
 
-    public Session allocateXp(int minutes, ActivityType activityType, LocalDate date) {
+    public Session allocateXp(int minutes, ActivityType activityType, LocalDate date, double multiplier) {
 
 
         int calculatedXp;
         int gainedXp = 0;
-        double multiplier = getVariety();
 
         double coefficient;
 
@@ -100,41 +105,28 @@ public class SessionManager {
         calculatedXp = (int) (minutes * multiplier * coefficient * 100);
         grindingXp += calculatedXp;
         gainedXp += calculatedXp;
-        currentGrindingXp = calculatedXp;
         coefficient = activityType.getReadingCoefficient();
         calculatedXp = (int) (minutes * multiplier * coefficient * 100);
         readingXp += calculatedXp;
         gainedXp += calculatedXp;
-        currentReadingXp = calculatedXp;
         coefficient = activityType.getSpeakingCoefficient();
         calculatedXp = (int) (minutes * multiplier * coefficient * 100);
         speakingXp += calculatedXp;
         gainedXp += calculatedXp;
-        currentSpeakingXp = calculatedXp;
         coefficient = activityType.getWritingCoefficient();
         calculatedXp = (int) (minutes * multiplier * coefficient * 100);
         writingXp += calculatedXp;
         gainedXp += calculatedXp;
-        currentWritingXp = calculatedXp;
         coefficient = activityType.getListeningCoefficient();
         calculatedXp = (int) (minutes * multiplier * coefficient * 100);
         listeningXp += calculatedXp;
         gainedXp += calculatedXp;
-        currentListeningXp = calculatedXp;
 
-        return new Session(minutes, activityType, date, gainedXp);
+
+        return new Session(minutes, activityType, date, gainedXp, multiplier);
 
     }
 
-    public int getXpJustCalculated(ActivityCategory activityCategory) {
-        return switch (activityCategory) {
-            case WRITING -> currentWritingXp;
-            case READING -> currentReadingXp;
-            case GRINDING -> currentGrindingXp;
-            case SPEAKING -> currentSpeakingXp;
-            case LISTENING -> currentListeningXp;
-        };
-    }
 
 
     public double getVariety() {
@@ -188,8 +180,18 @@ public class SessionManager {
     }
 
 
-    public int getTotalMinutes() {
+    public int getTotalSessionMinutes() {
         int totalMinutes = 0;
+        for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
+            for (Session session : entry.getValue()) {
+                totalMinutes += session.getMinutes();
+            }
+        }
+        return totalMinutes;
+    }
+
+    public int getTotalMinutes() {
+        int totalMinutes = startGrindingMinutes+startSpeakingMinutes+startListeningMinutes+startWritingMinutes+startReadingMinutes;
         for (Map.Entry<LocalDate, List<Session>> entry : sessionsByDate.entrySet()) {
             for (Session session : entry.getValue()) {
                 totalMinutes += session.getMinutes();
@@ -452,20 +454,37 @@ public class SessionManager {
 
 
     public void editSession(Session session, LocalDate newDate, ActivityType activityType, int minutes) {
+        System.out.println("Before edit:");
+        System.out.println("Grinding XP: " +  grindingXp);
+        System.out.println("Listening XP: " +  listeningXp);
+        System.out.println("Speaking XP: " +  speakingXp);
+        System.out.println("Writing XP: " +  writingXp);
+        System.out.println("Reading XP: " +  readingXp + "\n");
+
         deleteSession(session);
-        addSession(allocateXp(minutes, activityType, newDate));
+        addSession(allocateXp(minutes, activityType, newDate, session.getVariety()));
+
+        System.out.println("\nAfter edit:");
+        System.out.println("Grinding XP: " +  grindingXp);
+        System.out.println("Listening XP: " +  listeningXp);
+        System.out.println("Speaking XP: " +  speakingXp);
+        System.out.println("Writing XP: " +  writingXp);
+        System.out.println("Reading XP: " +  readingXp +"\n");
     }
 
 
     public void deleteSession(Session session) {
 
-        allocateXp(session.getMinutes(), session.getActivityType(), session.getDate());
 
-        grindingXp -= currentGrindingXp * 2;
-        readingXp -= currentReadingXp * 2;
-        speakingXp -= currentSpeakingXp * 2;
-        writingXp -= currentWritingXp * 2;
-        listeningXp -= currentListeningXp * 2;
+        double variety = session.getVariety();
+        ActivityType activityType = session.getActivityType();
+
+        grindingXp -= (int) (variety*activityType.getGrindingCoefficient()*session.getMinutes()*100);
+        readingXp -= (int) (variety*activityType.getReadingCoefficient()*session.getMinutes()*100);
+        listeningXp -= (int) (variety*activityType.getListeningCoefficient()*session.getMinutes()*100);
+        speakingXp -= (int) (variety*activityType.getSpeakingCoefficient()*session.getMinutes()*100);
+        writingXp -= (int) (variety*activityType.getWritingCoefficient()*session.getMinutes()*100);
+
 
         if (grindingXp < 0) {
             grindingXp = 0;
@@ -493,14 +512,6 @@ public class SessionManager {
 
     public int getInactiveStreak() {
         return inactiveStreak;
-    }
-
-    public void setLastStreakUpdate(LocalDate date) {
-        lastStreakUpdate = date;
-    }
-
-    public void setToday(LocalDate date) {
-        today = date;
     }
 
     public void makeDayNotNull(LocalDate date) {
