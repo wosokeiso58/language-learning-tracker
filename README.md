@@ -1,6 +1,6 @@
-# Language Dash
+# Language Learning Tracker
 
-Language Dash is a JavaFX desktop application for tracking language study sessions, visualising progress, and staying motivated through a gamified XP system.
+Language Learning Tracker is a JavaFX desktop application for tracking language study sessions, visualising progress, and staying motivated through a gamified XP system.
 
 It supports multiple languages, calendar-based study history, CEFR-style progression, statistics dashboards, and persistent JSON storage.
 
@@ -48,7 +48,7 @@ The project was built as a personal learning project to practice Java, JavaFX, U
 2. Configure JavaFX as a library dependency.
 3. Run `Main.java`.
 
-## What I Learned
+## What I Learnt
 
 This project evolved from a simple study tracker into a full desktop application. Through building it I learned:
 
